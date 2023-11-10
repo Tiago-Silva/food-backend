@@ -2,6 +2,8 @@ package br.com.food.enuns;
 
 public enum TipoPagamento {
     DINHEIRO,
-    CARTAO,
+    C_CREDITO,
+    C_DEBITO,
+
     PIX
 }

@@ -1,5 +1,7 @@
 package br.com.food.entity;
 
+import br.com.food.dto.EstabelecimentoRequestDTO;
+import br.com.food.dto.EstabelecimentoResponseDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -63,4 +65,35 @@ public class Estabelecimento {
 
     @OneToMany(mappedBy = "estabelecimento", fetch = FetchType.LAZY)
     private List<Produto> produtos;
+
+    public Estabelecimento(EstabelecimentoRequestDTO requestDTO) {
+        this.razaoSocial = requestDTO.razaoSocial();
+        this.nomeFantasia = requestDTO.nomeFantasia();
+        this.cnpj́ = requestDTO.cnpj́();
+        this.cpf = requestDTO.cpf();
+        this.pais = requestDTO.pais();
+        this.estado = requestDTO.estado();
+        this.cidade = requestDTO.cidade();
+        this.bairro = requestDTO.bairro();
+        this.endereco = requestDTO.endereco();
+        this.telefone = requestDTO.telefone();
+    }
+
+    public Estabelecimento(int idestabelecimento) {
+        this.idestabelecimento = idestabelecimento;
+    }
+
+    public Estabelecimento(EstabelecimentoResponseDTO responseDTO) {
+        this.idestabelecimento = responseDTO.idestabelecimento();
+        this.razaoSocial = responseDTO.razaoSocial();
+        this.nomeFantasia = responseDTO.nomeFantasia();
+        this.cnpj́ = responseDTO.cnpj́();
+        this.cpf = responseDTO.cpf();
+        this.pais = responseDTO.pais();
+        this.estado = responseDTO.estado();
+        this.cidade = responseDTO.cidade();
+        this.bairro = responseDTO.bairro();
+        this.endereco = responseDTO.endereco();
+        this.telefone = responseDTO.telefone();
+    }
 }
