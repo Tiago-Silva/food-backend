@@ -1,5 +1,7 @@
 package br.com.food.entity;
 
+import br.com.food.dto.ProdutoRequestDTO;
+import br.com.food.dto.ProdutoResponseDTO;
 import br.com.food.enuns.ProductCategory;
 import br.com.food.enuns.Promotions;
 import jakarta.persistence.*;
@@ -53,4 +55,27 @@ public class Produto {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idestabelecimento")
     private Estabelecimento estabelecimento;
+
+    public Produto(ProdutoRequestDTO requestDTO, Estabelecimento estabelecimento) {
+        this.nome = requestDTO.nome();
+        this.descricao = requestDTO.descricao();
+        this.valor = requestDTO.valor();
+        this.categoria = requestDTO.categoria();
+        this.status = requestDTO.status();
+        this.urlImage = requestDTO.urlImage();
+        this.enablePromotions = requestDTO.enablePromotions();
+        this.estabelecimento = estabelecimento;
+    }
+
+    public Produto(ProdutoResponseDTO responseDTO, Estabelecimento estabelecimento) {
+        this.idproduto = responseDTO.idproduto();
+        this.nome = responseDTO.nome();
+        this.descricao = responseDTO.descricao();
+        this.valor = responseDTO.valor();
+        this.categoria = responseDTO.categoria();
+        this.status = responseDTO.status();
+        this.urlImage = responseDTO.urlImage();
+        this.enablePromotions = responseDTO.enablePromotions();
+        this.estabelecimento = estabelecimento;
+    }
 }
