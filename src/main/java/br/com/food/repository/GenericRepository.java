@@ -143,13 +143,13 @@ public abstract class GenericRepository {
      *Nesse exemplo, se eu passar firstConditionalName = is_client, firstConditional = true,
      * estarei buscando todos os clientes
      */
-    public <T> List<T> getEntitiesByForeignKeyAndWithConditional(Class<T> entityClass,
+    public <T, E extends Enum<E>> List<T> getEntitiesByForeignKeyAndWithConditional(Class<T> entityClass,
                                                     String entityName,
                                                     String foreignKeyIdName,
                                                     int foreignKeyId,
                                                     String orderByPropertyName,
                                                     String conditionalName,
-                                                    String conditional) {
+                                                    E conditional) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
         Root<T> root = criteriaQuery.from(entityClass);
@@ -160,7 +160,7 @@ public abstract class GenericRepository {
         ParameterExpression<Integer> exForeignKeyId = builder.parameter(Integer.class, foreignKeyIdName);
         predicates.add(builder.equal(root.get(entityName).get(foreignKeyIdName), exForeignKeyId));
 
-        ParameterExpression<UserType> exConditional = builder.parameter(UserType.class, conditional);
+        ParameterExpression<Enum> exConditional = builder.parameter(Enum.class, conditionalName);
         predicates.add(builder.equal(root.get(conditionalName), exConditional));
 
         criteriaQuery.where(predicates.toArray(new Predicate[0]));
@@ -171,8 +171,7 @@ public abstract class GenericRepository {
 
         TypedQuery<T> query = em.createQuery(criteriaQuery);
         query.setParameter(foreignKeyIdName, foreignKeyId);
-        UserType userType = UserType.valueOf(conditional);
-        query.setParameter(exConditional, userType);
+        query.setParameter(exConditional, conditional);
 
         return query.getResultList();
     }

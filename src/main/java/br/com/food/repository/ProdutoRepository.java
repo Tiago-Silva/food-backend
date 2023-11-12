@@ -1,6 +1,7 @@
 package br.com.food.repository;
 
 import br.com.food.entity.Produto;
+import br.com.food.enuns.ProductCategory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class ProdutoRepository extends GenericRepository {
                 idestabelecimento,
                 "nome",
                 "categoria",
-                category
+                ProductCategory.valueOf(category)
         );
     }
 

@@ -27,18 +27,18 @@ public class Produto {
     private int idproduto;
 
     @NotBlank
-    @Size(max = 4)
+    @Size(min = 4)
     private String nome;
 
     @NotBlank
-    @Size(max = 4)
+    @Size(min = 4)
     private String descricao;
 
     @NotNull
     @Positive
     private BigDecimal valor;
 
-    @NotBlank
+    @NotNull
     @Enumerated(EnumType.STRING)
     private ProductCategory categoria;
 
