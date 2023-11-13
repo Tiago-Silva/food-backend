@@ -74,6 +74,10 @@ public abstract class GenericRepository {
         return this.em.find(entityClass, id);
     }
 
+    public <T> T getEntityById(Class<T> entityClass, Long id) {
+        return this.em.find(entityClass, id);
+    }
+
     public <T> T getEntityByProperty(Class<T> entityClass, String property) {
         return this.em.find(entityClass, property);
     }
@@ -187,6 +191,40 @@ public abstract class GenericRepository {
      * @return
      * @param <T>
      */
+    public <T, E extends Enum<E>> List<T> getTwoEntitiesByForeignKeyAndWithConditional(Class<T> entityClass,
+                                                            String firstEntityName,
+                                                            String secondEntityName,
+                                                            String foreignKeyPropertyName,
+                                                            int foreignKeyId,
+                                                            String orderByPropertyName,
+                                                            String conditionalName,
+                                                            E conditional) {
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
+        Root<T> root = criteriaQuery.from(entityClass);
+        criteriaQuery.select(root);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        ParameterExpression<Integer> exForeignKeyId = builder.parameter(Integer.class, foreignKeyPropertyName);
+        predicates.add(builder.equal(root.get(firstEntityName).get(secondEntityName).get(foreignKeyPropertyName), exForeignKeyId));
+
+        ParameterExpression<Enum> exConditional = builder.parameter(Enum.class, conditionalName);
+        predicates.add(builder.equal(root.get(conditionalName), exConditional));
+
+        criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+        if (orderByPropertyName != null && !orderByPropertyName.isEmpty()) {
+            criteriaQuery.orderBy(builder.asc(root.get(orderByPropertyName)));
+        }
+
+        TypedQuery<T> query = em.createQuery(criteriaQuery);
+        query.setParameter(foreignKeyPropertyName, foreignKeyId);
+        query.setParameter(exConditional, conditional);
+
+        return query.getResultList();
+    }
+
     public <T> List<T> getTwoEntitiesByForeignKey(Class<T> entityClass, String firstEntityName,
                                                   String secondEntityName, String foreignKeyPropertyName,
                                                   int foreignKeyId, String orderByPropertyName) {
@@ -243,6 +281,63 @@ public abstract class GenericRepository {
         TypedQuery<T> typedQuery = em.createQuery(query);
 
         return typedQuery.getResultList();
+    }
+
+    public <T> List<T> getJoinColumn(Class<T> entityClass, String entityJoinName, String entityId,
+                                     String foreignKeyId, String orderByPropertyName) {
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> query = builder.createQuery(entityClass);
+        Root<T> root = query.from(entityClass);
+
+        Path<Integer> grupoPath = root.join(entityJoinName).get(entityId);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        Predicate equals = builder.equal(grupoPath,foreignKeyId);
+        predicates.add(equals);
+
+        query.where( predicates.toArray(new Predicate[0]));
+
+        if (orderByPropertyName != null && !orderByPropertyName.isEmpty()) {
+            query.orderBy(builder.asc(root.get(orderByPropertyName)));
+        }
+
+        TypedQuery<T> typedQuery = em.createQuery(query);
+
+        return typedQuery.getResultList();
+    }
+
+    public <T, E extends Enum<E>> List<T> getEntitiesByForeignKeyAndWithConditional(Class<T> entityClass,
+                                                                                    String entityName,
+                                                                                    String foreignKeyIdName,
+                                                                                    String foreignKeyId,
+                                                                                    String orderByPropertyName,
+                                                                                    String conditionalName,
+                                                                                    E conditional) {
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
+        Root<T> root = criteriaQuery.from(entityClass);
+        criteriaQuery.select(root);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        ParameterExpression<Integer> exForeignKeyId = builder.parameter(Integer.class, foreignKeyIdName);
+        predicates.add(builder.equal(root.get(entityName).get(foreignKeyIdName), exForeignKeyId));
+
+        ParameterExpression<Enum> exConditional = builder.parameter(Enum.class, conditionalName);
+        predicates.add(builder.equal(root.get(conditionalName), exConditional));
+
+        criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+        if (orderByPropertyName != null && !orderByPropertyName.isEmpty()) {
+            criteriaQuery.orderBy(builder.asc(root.get(orderByPropertyName)));
+        }
+
+        TypedQuery<T> query = em.createQuery(criteriaQuery);
+        query.setParameter(foreignKeyIdName, foreignKeyId);
+        query.setParameter(exConditional, conditional);
+
+        return query.getResultList();
     }
 
     @Transactional(propagation= Propagation.REQUIRED, isolation= Isolation.SERIALIZABLE)

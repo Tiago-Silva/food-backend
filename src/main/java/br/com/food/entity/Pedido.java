@@ -1,5 +1,7 @@
 package br.com.food.entity;
 
+import br.com.food.dto.PedidoRequestDTO;
+import br.com.food.dto.PedidoResponseDTO;
 import br.com.food.enuns.TipoPagamento;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +10,7 @@ import lombok.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -49,6 +52,32 @@ public class Pedido implements Serializable {
     @Column(name = "tipo_pagamento")
     private TipoPagamento tipoPagamento;
 
-    @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Item> items;
+
+    public Pedido(PedidoRequestDTO requestDTO, User user) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        this.data = new Date();
+        this.ano = Integer.toString(localDateTime.getYear());
+        this.mes = Integer.toString(localDateTime.getMonthValue());
+        this.dia = Integer.toString(localDateTime.getDayOfMonth());
+        this.hora = Integer.toString(localDateTime.getHour());
+        this.total = requestDTO.total();
+        this.user = user;
+        this.tipoPagamento = requestDTO.tipoPagamento();
+        this.items = requestDTO.items();
+    }
+
+    public Pedido(PedidoResponseDTO responseDTO, User user) {
+        this.idpedido = responseDTO.idpedido();
+        this.data = responseDTO.data();
+        this.ano = responseDTO.ano();
+        this.mes = responseDTO.mes();
+        this.dia = responseDTO.dia();
+        this.hora = responseDTO.hora();
+        this.total = responseDTO.total();
+        this.user = user;
+        this.tipoPagamento = responseDTO.tipoPagamento();
+        this.items = responseDTO.items();
+    }
 }

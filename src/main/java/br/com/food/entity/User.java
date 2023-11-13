@@ -113,4 +113,6 @@ public class User implements Serializable {
         this.enabled = responseDTO.enabled();
         this.estabelecimento = estabelecimento;
     }
+
+    public User(String iduser) { this.id = iduser; }
 }
