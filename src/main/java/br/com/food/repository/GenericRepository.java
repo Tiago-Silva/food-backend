@@ -1,6 +1,5 @@
 package br.com.food.repository;
 
-import br.com.food.enuns.UserType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -66,9 +65,7 @@ public abstract class GenericRepository {
      * @return
      * @param <T>
      */
-    public <T> T getEntityById(Class<T> entityClass, int id) {
-        return this.em.find(entityClass, id);
-    }
+    public <T> T getEntityById(Class<T> entityClass, int id) { return this.em.find(entityClass, id); }
 
     public <T> T getEntityById(Class<T> entityClass, String id) {
         return this.em.find(entityClass, id);
@@ -76,10 +73,6 @@ public abstract class GenericRepository {
 
     public <T> T getEntityById(Class<T> entityClass, Long id) {
         return this.em.find(entityClass, id);
-    }
-
-    public <T> T getEntityByProperty(Class<T> entityClass, String property) {
-        return this.em.find(entityClass, property);
     }
 
     public <T> T getEntityByProperty(Class<T> classe, String propertySeachName, String property) {
@@ -321,7 +314,7 @@ public abstract class GenericRepository {
 
         List<Predicate> predicates = new ArrayList<>();
 
-        ParameterExpression<Integer> exForeignKeyId = builder.parameter(Integer.class, foreignKeyIdName);
+        ParameterExpression<String> exForeignKeyId = builder.parameter(String.class, foreignKeyIdName);
         predicates.add(builder.equal(root.get(entityName).get(foreignKeyIdName), exForeignKeyId));
 
         ParameterExpression<Enum> exConditional = builder.parameter(Enum.class, conditionalName);

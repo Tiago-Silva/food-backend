@@ -47,8 +47,7 @@ public class PedidoController {
     }
 
     @GetMapping("/getPedidosByUser/{iduser}")
-    public ResponseEntity<List<PedidoResponseDTO>> getAllPedidoByUser(@PathVariable("iduser")
-                                                                                 String iduser) {
+    public ResponseEntity<List<PedidoResponseDTO>> getAllPedidoByUser(@PathVariable("iduser") String iduser) {
         return new ResponseEntity<>(this.service.getAllPedidoByUser(iduser), HttpStatus.OK);
     }
 

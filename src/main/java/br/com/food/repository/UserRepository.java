@@ -11,7 +11,8 @@ import java.util.List;
 public class UserRepository extends GenericRepository {
 
     public User getUserByLogin(String login) {
-        return super.getEntityByProperty(User.class,login);
+        return super.getEntityByProperty(User.class,"login",
+                login);
     }
 
     public User getUserById(String id) {

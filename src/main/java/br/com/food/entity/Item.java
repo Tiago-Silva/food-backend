@@ -1,6 +1,5 @@
 package br.com.food.entity;
 
-import br.com.food.enuns.ProductCategory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +9,6 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "item")
@@ -28,12 +26,12 @@ public class Item implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long iditem;
 
-    @NotBlank
+    @NotNull
     @Positive
     private int quantidade;
 
     @NotBlank
-    @Size(max = 4)
+    @Size(min = 4)
     private String descricao;
 
     @NotNull

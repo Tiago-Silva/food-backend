@@ -91,7 +91,7 @@ public class ProductTests {
     }
 
     @Test
-    @Order(6)
+    @Order(4)
     void testGetProductsByCategory() {
         webTestClient
                 .get()
@@ -103,7 +103,7 @@ public class ProductTests {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     void testGetAllProductsByEstablishment() {
         webTestClient
                 .get()
@@ -115,7 +115,7 @@ public class ProductTests {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void testGetById() {
         webTestClient
                 .get()

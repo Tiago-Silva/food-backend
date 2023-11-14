@@ -4,7 +4,7 @@ import br.com.food.dto.PedidoRequestDTO;
 import br.com.food.dto.PedidoResponseDTO;
 import br.com.food.enuns.TipoPagamento;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serial;
@@ -47,7 +47,7 @@ public class Pedido implements Serializable {
     @JoinColumn(name = "id")
     private User user;
 
-    @NotBlank
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_pagamento")
     private TipoPagamento tipoPagamento;

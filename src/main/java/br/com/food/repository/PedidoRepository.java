@@ -50,7 +50,7 @@ public class PedidoRepository extends GenericRepository {
                 "id",
                 iduser,
                 "ano",
-                "tipoPagametno",
+                "tipoPagamento",
                 TipoPagamento.valueOf(paymentType)
         );
     }
