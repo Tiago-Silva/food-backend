@@ -1,7 +1,7 @@
 CREATE TABLE `food`.`users` (
     `id` VARCHAR(256) NOT NULL,
     `nome` VARCHAR(45) NOT NULL,
-    `sobreNome` VARCHAR(45) NULL,
+    `sobre_nome` VARCHAR(45) NULL,
     `login` VARCHAR(45) NOT NULL,
     `password` VARCHAR(45) NOT NULL,
     `telefone` VARCHAR(45) NULL,

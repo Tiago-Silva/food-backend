@@ -66,6 +66,9 @@ public class Pedido implements Serializable {
         this.user = user;
         this.tipoPagamento = requestDTO.tipoPagamento();
         this.items = requestDTO.items();
+        for (Item item : this.items) {
+            item.setPedido(this);
+        }
     }
 
     public Pedido(PedidoResponseDTO responseDTO, User user) {
@@ -79,5 +82,8 @@ public class Pedido implements Serializable {
         this.user = user;
         this.tipoPagamento = responseDTO.tipoPagamento();
         this.items = responseDTO.items();
+        for (Item item : this.items) {
+            item.setPedido(this);
+        }
     }
 }

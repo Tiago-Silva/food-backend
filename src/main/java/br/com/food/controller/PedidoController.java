@@ -61,6 +61,20 @@ public class PedidoController {
                 iduser, paymentType), HttpStatus.OK);
     }
 
+    @GetMapping("/getPedidosByUser/{iduser}/{paymentType}/{pageNumber}/{pageSize}")
+    public ResponseEntity<List<PedidoResponseDTO>> getPedidoByUserAndByPaymentTypeWithPagination(
+            @PathVariable("iduser")
+            String iduser,
+            @PathVariable("paymentType")
+            String paymentType,
+            @PathVariable("pageNumber")
+            int pageNumber,
+            @PathVariable("pageSize")
+            int pageSize) {
+        return new ResponseEntity<>(this.service.getPedidoByUserAndByPaymentTypeWhitPagination(
+                iduser, paymentType, pageNumber, pageSize), HttpStatus.OK);
+    }
+
     @GetMapping("/getById/{idpedido}")
     public ResponseEntity<PedidoResponseDTO> getPedidoById(@PathVariable("idpedido") Long idpedido) {
         return new ResponseEntity<>(this.service.getPedidoById(idpedido), HttpStatus.OK);

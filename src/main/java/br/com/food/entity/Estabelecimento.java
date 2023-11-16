@@ -24,14 +24,16 @@ public class Estabelecimento {
 
     @NotBlank
     @Size(max = 100)
+    @Column(name = "razao_social")
     private String razaoSocial;
 
     @NotBlank
     @Size(max = 100)
+    @Column(name = "nome_fantasia")
     private String nomeFantasia;
 
     @Size(max = 15)
-    private String cnpj́;
+    private String cnpj;
 
     @Size(max = 15)
     private String cpf;
@@ -69,7 +71,7 @@ public class Estabelecimento {
     public Estabelecimento(EstabelecimentoRequestDTO requestDTO) {
         this.razaoSocial = requestDTO.razaoSocial();
         this.nomeFantasia = requestDTO.nomeFantasia();
-        this.cnpj́ = requestDTO.cnpj́();
+        this.cnpj = requestDTO.cnpj();
         this.cpf = requestDTO.cpf();
         this.pais = requestDTO.pais();
         this.estado = requestDTO.estado();
@@ -87,7 +89,7 @@ public class Estabelecimento {
         this.idestabelecimento = responseDTO.idestabelecimento();
         this.razaoSocial = responseDTO.razaoSocial();
         this.nomeFantasia = responseDTO.nomeFantasia();
-        this.cnpj́ = responseDTO.cnpj́();
+        this.cnpj = responseDTO.cnpj();
         this.cpf = responseDTO.cpf();
         this.pais = responseDTO.pais();
         this.estado = responseDTO.estado();

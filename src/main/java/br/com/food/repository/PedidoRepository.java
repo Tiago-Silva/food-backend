@@ -2,6 +2,7 @@ package br.com.food.repository;
 
 import br.com.food.entity.Pedido;
 import br.com.food.enuns.TipoPagamento;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -52,6 +53,23 @@ public class PedidoRepository extends GenericRepository {
                 "ano",
                 "tipoPagamento",
                 TipoPagamento.valueOf(paymentType)
+        );
+    }
+
+    public Page<Pedido> getPedidoByUserAndByPaymentTypeWhitPagination(String iduser,
+                                                                    String paymentType,
+                                                                    int pageNumber,
+                                                                    int pageSize) {
+        return super.getEntitiesByForeignKeyAndWithConditionalWithPagination(
+                Pedido.class,
+                "user",
+                "id",
+                iduser,
+                "mes",
+                "tipoPagamento",
+                TipoPagamento.valueOf(paymentType),
+                pageNumber,
+                pageSize
         );
     }
 }

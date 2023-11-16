@@ -48,7 +48,7 @@ public class EstabelecimentoService {
                 estabelecimento.getIdestabelecimento(),
                 estabelecimento.getRazaoSocial(),
                 estabelecimento.getNomeFantasia(),
-                estabelecimento.getCnpj́(),
+                estabelecimento.getCnpj(),
                 estabelecimento.getCpf(),
                 estabelecimento.getPais(),
                 estabelecimento.getEstado(),

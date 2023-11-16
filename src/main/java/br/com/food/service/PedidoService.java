@@ -7,6 +7,7 @@ import br.com.food.entity.User;
 import br.com.food.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,9 +15,7 @@ import java.util.stream.Collectors;
 public class PedidoService {
 
     private final PedidoRepository repository;
-    public PedidoService(PedidoRepository repository) {
-        this.repository = repository;
-    }
+    public PedidoService(PedidoRepository repository) { this.repository = repository; }
 
     public void savePedido(PedidoRequestDTO requestDTO) {
         if (requestDTO == null || requestDTO.items().isEmpty() || requestDTO.iduser() == null) {
@@ -72,6 +71,21 @@ public class PedidoService {
         return this.mapPedidoToResponseDTO(this.repository.getEntityById(Pedido.class, idpedido));
     }
 
+    public List<PedidoResponseDTO> getPedidoByUserAndByPaymentTypeWhitPagination(String iduser,
+                                                                                 String paymentType,
+                                                                                 int pageNumber,
+                                                                                 int pageSize) {
+        if (iduser == null || paymentType == null || pageNumber < 0 || pageSize < 0) {
+            throw new IllegalArgumentException("Parametros inválidos, verifique!!!");
+        }
+        return this.repository.getPedidoByUserAndByPaymentTypeWhitPagination(
+                iduser,
+                paymentType,
+                pageNumber,
+                pageSize
+        ).getContent().stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
+    }
+
     public PedidoResponseDTO mapPedidoToResponseDTO(Pedido pedido) {
         return new PedidoResponseDTO(
                 pedido.getIdpedido(),
@@ -83,7 +97,7 @@ public class PedidoService {
                 pedido.getTotal(),
                 pedido.getUser().getId(),
                 pedido.getTipoPagamento(),
-                pedido.getItems()
+                new ArrayList<>()
         );
     }
 }

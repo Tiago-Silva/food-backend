@@ -1,6 +1,5 @@
 package br.com.food.repository;
 
-import br.com.food.dto.UserResponseDTO;
 import br.com.food.entity.User;
 import br.com.food.enuns.UserType;
 import org.springframework.stereotype.Repository;
