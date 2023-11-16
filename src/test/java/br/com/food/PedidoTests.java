@@ -216,4 +216,17 @@ public class PedidoTests {
                 .exchange()
                 .expectStatus().isOk();
     }
+
+    @Test
+    @Order(10)
+    void testGetPedidoByUserAndByPaymentTypeWithPagination() {
+        User user = this.userRepository.getUserByLogin("cliente");
+        webTestClient
+                .get()
+                .uri("/pedido/getPedidosByUser/" + user.getId() + "/PIX/1/10")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(PedidoResponseDTO.class).hasSize(1);
+    }
 }

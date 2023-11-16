@@ -2,11 +2,8 @@ package br.com.food;
 
 import br.com.food.dto.EstabelecimentoRequestDTO;
 import br.com.food.dto.ProdutoRequestDTO;
-import br.com.food.dto.UserRequestDTO;
 import br.com.food.dto.UserResponseDTO;
 import br.com.food.enuns.ProductCategory;
-import br.com.food.enuns.UserRole;
-import br.com.food.enuns.UserType;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -55,7 +52,7 @@ public class ProductTests {
         var empress = new ProdutoRequestDTO(
               "product name",
               "product test",
-              new BigDecimal(25.00),
+              new BigDecimal("25.00"),
                 ProductCategory.ARTESANAIS,
                 true,
                 "url image",
