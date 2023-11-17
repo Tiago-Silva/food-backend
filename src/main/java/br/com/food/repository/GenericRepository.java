@@ -14,20 +14,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Repository
+@Transactional(readOnly = true)
 public abstract class GenericRepository {
 
     @PersistenceContext
     private EntityManager em;
 
-    private CriteriaBuilder getCriteriaBuilder() {
-        return em.getCriteriaBuilder();
-    }
+    private CriteriaBuilder getCriteriaBuilder() { return em.getCriteriaBuilder(); }
 
     private <E extends Enum<E>> ParameterExpression<E> createEnumParameterExpression(
-            CriteriaBuilder builder, Root<?> root, String conditionalName, E conditional) {
+        CriteriaBuilder builder, Root<?> root, String conditionalName, E conditional) {
         Class<E> enumType = (Class<E>) conditional.getDeclaringClass();
         return builder.parameter(enumType, conditionalName);
     }
@@ -263,7 +263,7 @@ public abstract class GenericRepository {
         CriteriaQuery<T> query = builder.createQuery(entityClass);
         Root<T> root = query.from(entityClass);
 
-        Path<Integer> grupoPath = root.join(entityJoinName).get(entityId);
+        Path<String> grupoPath = root.join(entityJoinName).get(entityId);
 
         List<Predicate> predicates = new ArrayList<>();
 
@@ -308,6 +308,137 @@ public abstract class GenericRepository {
         return typedQuery.getResultList();
     }
 
+    public <T> List<T> getJoinColumnWithDateAndPagination(Class<T> entityClass,
+                                                          String entityJoinName,
+                                                          String entityId,
+                                                          String foreignKeyId,
+                                                          String dateFieldName,
+                                                          Date startDate,
+                                                          Date endDate,
+                                                          String orderByPropertyName,
+                                                          int pageNumber,
+                                                          int pageSize) {
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> query = builder.createQuery(entityClass);
+        Root<T> root = query.from(entityClass);
+
+        Path<String> groupPath = root.join(entityJoinName).get(entityId);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        Predicate equals = builder.equal(groupPath, foreignKeyId);
+        predicates.add(equals);
+
+        if (startDate != null) {
+            predicates.add(builder.greaterThanOrEqualTo(root.get(dateFieldName), startDate));
+        }
+        if (endDate != null) {
+            predicates.add(builder.lessThanOrEqualTo(root.get(dateFieldName), endDate));
+        }
+
+        query.where(predicates.toArray(new Predicate[0]));
+
+        if (orderByPropertyName != null && !orderByPropertyName.isEmpty()) {
+            query.orderBy(builder.asc(root.get(orderByPropertyName)));
+        }
+
+        TypedQuery<T> typedQuery = em.createQuery(query);
+
+        typedQuery.setFirstResult((pageNumber - 1) * pageSize);
+        typedQuery.setMaxResults(pageSize);
+
+        return typedQuery.getResultList();
+
+//        long total = getTotalCount(entityClass, entityJoinName, entityId, foreignKeyId);
+
+//        return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
+    }
+
+    public <T> Page<T> getJoinColumnWithDateAndPagination(Class<T> entityClass,
+                                                          String entityJoinName,
+                                                          String entityId,
+                                                          int foreignKeyId,
+                                                          String dateFieldName,
+                                                          Date startDate,
+                                                          Date endDate,
+                                                          String orderByPropertyName,
+                                                          int pageNumber,
+                                                          int pageSize) {
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> query = builder.createQuery(entityClass);
+        Root<T> root = query.from(entityClass);
+
+        Path<Integer> groupPath = root.join(entityJoinName).get(entityId);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        Predicate equals = builder.equal(groupPath, foreignKeyId);
+        predicates.add(equals);
+
+        if (startDate != null) {
+            predicates.add(builder.greaterThanOrEqualTo(root.get(dateFieldName), startDate));
+        }
+        if (endDate != null) {
+            predicates.add(builder.lessThanOrEqualTo(root.get(dateFieldName), endDate));
+        }
+
+        query.where(predicates.toArray(new Predicate[0]));
+
+        if (orderByPropertyName != null && !orderByPropertyName.isEmpty()) {
+            query.orderBy(builder.asc(root.get(orderByPropertyName)));
+        }
+
+        TypedQuery<T> typedQuery = em.createQuery(query);
+
+        typedQuery.setFirstResult((pageNumber - 1) * pageSize);
+        typedQuery.setMaxResults(pageSize);
+
+        List<T> resultList = typedQuery.getResultList();
+
+        long total = getTotalCount(entityClass, entityJoinName, entityId, foreignKeyId);
+
+        return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
+    }
+
+    public <T> List<T> getTwoEntitiesByForeignKeyWithDateAndPagination(Class<T> entityClass,
+                                                                       String firstEntityName,
+                                                                       String secondEntityName,
+                                                                       String foreignKeyPropertyName,
+                                                                       int foreignKeyId,
+                                                                       String dateFieldName,
+                                                                       Date startDate,
+                                                                       Date endDate,
+                                                                       String orderByPropertyName,
+                                                                       int pageNumber,
+                                                                       int pageSize) {
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
+        Root<T> root = criteriaQuery.from(entityClass);
+        criteriaQuery.select(root);
+
+        List<Predicate> predicates = new ArrayList<>();
+        Path<Object> foreignKeyPath = root.get(firstEntityName).get(secondEntityName).get(foreignKeyPropertyName);
+        predicates.add(builder.equal(foreignKeyPath, foreignKeyId));
+
+        if (startDate != null && endDate != null) {
+            Predicate datePredicate = builder.between(root.get(dateFieldName), startDate, endDate);
+            predicates.add(datePredicate);
+        }
+
+        Predicate combinedPredicate = builder.and(predicates.toArray(new Predicate[0]));
+        criteriaQuery.where(combinedPredicate);
+
+        if (orderByPropertyName != null && !orderByPropertyName.isEmpty()) {
+            criteriaQuery.orderBy(builder.asc(root.get(orderByPropertyName)));
+        }
+
+        TypedQuery<T> typedQuery = em.createQuery(criteriaQuery);
+        typedQuery.setFirstResult((pageNumber - 1) * pageSize);
+        typedQuery.setMaxResults(pageSize);
+
+        return typedQuery.getResultList();
+    }
+
     public <T, E extends Enum<E>> List<T> getEntitiesByForeignKeyAndWithConditional(Class<T> entityClass,
                                                                                     String entityName,
                                                                                     String foreignKeyIdName,
@@ -341,7 +472,7 @@ public abstract class GenericRepository {
         return query.getResultList();
     }
 
-    public <T, E extends Enum<E>> Page<T> getEntitiesByForeignKeyAndWithConditionalWithPagination(
+    public <T, E extends Enum<E>> List<T> getEntitiesByForeignKeyAndWithConditionalWithPagination(
             Class<T> entityClass,
             String entityName,
             String foreignKeyIdName,
@@ -378,11 +509,11 @@ public abstract class GenericRepository {
         query.setFirstResult((pageNumber - 1) * pageSize);
         query.setMaxResults(pageSize);
 
-        List<T> resultList = query.getResultList();
+        return query.getResultList();
 
-        long total = getTotalCount(entityClass, entityName, foreignKeyIdName, foreignKeyId, conditionalName, conditional);
+//        long total = getTotalCount(entityClass, entityName, foreignKeyIdName, foreignKeyId, conditionalName, conditional);
 
-        return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
+//        return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
     }
 
     private <T, E extends Enum<E>> long getTotalCount(Class<T> entityClass,
@@ -412,29 +543,101 @@ public abstract class GenericRepository {
         return countTypedQuery.getSingleResult();
     }
 
-    @Transactional(propagation= Propagation.REQUIRED, isolation= Isolation.SERIALIZABLE)
+    private <T> long getTotalCount(Class<T> entityClass,
+                                  String entityName,
+                                  String foreignKeyIdName,
+                                  String foreignKeyId) {
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+        Root<T> root = countQuery.from(entityClass);
+        countQuery.select(builder.count(root));
+
+        List<Predicate> countPredicates = new ArrayList<>();
+        ParameterExpression<String> exForeignKeyId = builder.parameter(String.class, foreignKeyIdName);
+        countPredicates.add(builder.equal(root.get(entityName).get(foreignKeyIdName), exForeignKeyId));
+
+
+        countQuery.where(countPredicates.toArray(new Predicate[0]));
+
+        TypedQuery<Long> countTypedQuery = em.createQuery(countQuery);
+        countTypedQuery.setParameter(foreignKeyIdName, foreignKeyId);
+
+        return countTypedQuery.getSingleResult();
+    }
+
+    private <T> long getTotalCount(Class<T> entityClass,
+                                   String entityName,
+                                   String foreignKeyIdName,
+                                   int foreignKeyId) {
+
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+        Root<T> root = countQuery.from(entityClass);
+        countQuery.select(builder.count(root));
+
+        List<Predicate> countPredicates = new ArrayList<>();
+        ParameterExpression<Integer> exForeignKeyId = builder.parameter(Integer.class, foreignKeyIdName);
+        countPredicates.add(builder.equal(root.get(entityName).get(foreignKeyIdName), exForeignKeyId));
+
+
+        countQuery.where(countPredicates.toArray(new Predicate[0]));
+
+        TypedQuery<Long> countTypedQuery = em.createQuery(countQuery);
+        countTypedQuery.setParameter(foreignKeyIdName, foreignKeyId);
+
+        return countTypedQuery.getSingleResult();
+    }
+
+    private <T> long getTotalCountTwoEntity(Class<T> entityClass,
+                                            String firstEntityName,
+                                            String secondEntityName,
+                                            String foreignKeyPropertyName,
+                                            int foreignKeyId,
+                                            String dateFieldName,
+                                            Date startDate,
+                                            Date endDate) {
+
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+        Root<T> root = countQuery.from(entityClass);
+        countQuery.select(builder.count(root));
+
+        // Criando expressões para comparação de ID e datas
+        Predicate foreignKeyIdPredicate = builder.equal(root.get(firstEntityName).get(secondEntityName).get(foreignKeyPropertyName), foreignKeyId);
+        Predicate datePredicate = builder.between(root.get(dateFieldName), startDate, endDate);
+
+        // Combinando as expressões com um 'AND'
+        Predicate combinedPredicate = builder.and(foreignKeyIdPredicate, datePredicate);
+        countQuery.where(combinedPredicate);
+
+        TypedQuery<Long> countTypedQuery = em.createQuery(countQuery);
+
+        return countTypedQuery.getSingleResult();
+    }
+
+    @Transactional(propagation= Propagation.REQUIRED, isolation= Isolation.SERIALIZABLE, readOnly = false)
     public void save(Object objeto) {
         em.persist(objeto);
         em.flush();
     }
 
-    @Transactional(propagation= Propagation.REQUIRED, isolation= Isolation.SERIALIZABLE)
+    @Transactional(propagation= Propagation.REQUIRED, isolation= Isolation.SERIALIZABLE , readOnly = false)
     public Object saveWithReturn(Object objeto) {
         em.persist(objeto);
         em.flush();
         return objeto;
     }
-    @Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.SERIALIZABLE)
+    @Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.SERIALIZABLE, readOnly = false)
     public void delete(Object objeto) {
         objeto = em.merge(objeto);
         em.remove(objeto);
     }
-    @Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.SERIALIZABLE)
+    @Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.SERIALIZABLE, readOnly = false)
     public void update(Object objeto) {
         em.merge(objeto);
     }
 
-    @Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.SERIALIZABLE)
+    @Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.SERIALIZABLE, readOnly = false)
     public Object updateWithReturn(Object objeto) {
         em.merge(objeto);
         return objeto;

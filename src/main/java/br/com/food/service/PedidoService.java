@@ -4,6 +4,7 @@ import br.com.food.dto.PedidoRequestDTO;
 import br.com.food.dto.PedidoResponseDTO;
 import br.com.food.entity.Pedido;
 import br.com.food.entity.User;
+import br.com.food.regras.DataFormat;
 import br.com.food.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,8 @@ public class PedidoService {
 
     private final PedidoRepository repository;
     public PedidoService(PedidoRepository repository) { this.repository = repository; }
+
+    private DataFormat dataFormat;
 
     public void savePedido(PedidoRequestDTO requestDTO) {
         if (requestDTO == null || requestDTO.items().isEmpty() || requestDTO.iduser() == null) {
@@ -83,7 +86,43 @@ public class PedidoService {
                 paymentType,
                 pageNumber,
                 pageSize
-        ).getContent().stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
+        ).stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
+    }
+
+    public List<PedidoResponseDTO> getAllPedidoByUserWithDateAndPagination(String iduser,
+                                                                           String startDate,
+                                                                           String endDate,
+                                                                           int pageNumber,
+                                                                           int pageSize) {
+        if (iduser == null || startDate == null || endDate == null || pageNumber < 0 || pageSize < 0) {
+            throw new IllegalArgumentException("Parametros inválidos, verifique!!!");
+        }
+
+        return this.repository.getAllPedidoByUserWithDataAndPagination(
+                iduser,
+                this.dataFormat.FormatDataInicio(startDate),
+                this.dataFormat.FormatDataFim(endDate),
+                pageNumber,
+                pageSize
+        ).stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
+    }
+
+    public List<PedidoResponseDTO> getAllPedidoEstablishmentWithDateAndPagination(int idestabelecimento,
+                                                                                  String startDate,
+                                                                                  String endDate,
+                                                                                  int pageNumber,
+                                                                                  int pageSize) {
+        if (idestabelecimento <= 0 || startDate == null || endDate == null || pageNumber < 0 || pageSize < 0) {
+            throw new IllegalArgumentException("Parametros inválidos, verifique!!!");
+        }
+        this.dataFormat = new DataFormat();
+        return this.repository.getAllPedidoEstablishmentWithDataAndPagination(
+                idestabelecimento,
+                this.dataFormat.FormatDataInicio(startDate),
+                this.dataFormat.FormatDataFim(endDate),
+                pageNumber,
+                pageSize
+        ).stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
     }
 
     public PedidoResponseDTO mapPedidoToResponseDTO(Pedido pedido) {

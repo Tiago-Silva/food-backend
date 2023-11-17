@@ -61,7 +61,7 @@ public class PedidoController {
                 iduser, paymentType), HttpStatus.OK);
     }
 
-    @GetMapping("/getPedidosByUser/{iduser}/{paymentType}/{pageNumber}/{pageSize}")
+    @GetMapping("/getPedidosByUserPagination/{iduser}/{paymentType}/{pageNumber}/{pageSize}")
     public ResponseEntity<List<PedidoResponseDTO>> getPedidoByUserAndByPaymentTypeWithPagination(
             @PathVariable("iduser")
             String iduser,
@@ -75,8 +75,40 @@ public class PedidoController {
                 iduser, paymentType, pageNumber, pageSize), HttpStatus.OK);
     }
 
+    @GetMapping("/getPedidosByUserWithDatePagination/{iduser}/{startDate}/{endDate}/{pageNumber}/{pageSize}")
+    public ResponseEntity<List<PedidoResponseDTO>> getPedidoByUserWithDatePagination(
+            @PathVariable("iduser")
+            String iduser,
+            @PathVariable("startDate")
+            String startDate,
+            @PathVariable("endDate")
+            String endDate,
+            @PathVariable("pageNumber")
+            int pageNumber,
+            @PathVariable("pageSize")
+            int pageSize) {
+        return new ResponseEntity<>(this.service.getAllPedidoByUserWithDateAndPagination(
+                iduser, startDate, endDate, pageNumber, pageSize), HttpStatus.OK);
+    }
+
     @GetMapping("/getById/{idpedido}")
     public ResponseEntity<PedidoResponseDTO> getPedidoById(@PathVariable("idpedido") Long idpedido) {
         return new ResponseEntity<>(this.service.getPedidoById(idpedido), HttpStatus.OK);
+    }
+
+    @GetMapping("/getPedidoByEstablishmentWithDatePagination/{idestabelecimento}/{startDate}/{endDate}/{pageNumber}/{pageSize}")
+    public ResponseEntity<List<PedidoResponseDTO>> getPedidoByEstablishmentWithDatePagination(
+            @PathVariable("idestabelecimento")
+            int idestabelecimento,
+            @PathVariable("startDate")
+            String startDate,
+            @PathVariable("endDate")
+            String endDate,
+            @PathVariable("pageNumber")
+            int pageNumber,
+            @PathVariable("pageSize")
+            int pageSize) {
+        return new ResponseEntity<>(this.service.getAllPedidoEstablishmentWithDateAndPagination(
+                idestabelecimento, startDate, endDate, pageNumber, pageSize), HttpStatus.OK);
     }
 }
