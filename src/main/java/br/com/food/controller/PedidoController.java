@@ -30,83 +30,83 @@ public class PedidoController {
         return new ResponseEntity<>(HttpStatus.CREATED,HttpStatus.OK);
     }
 
-    @GetMapping("/getPedidos/{idestabelecimento}")
-    public ResponseEntity<List<PedidoResponseDTO>> getAllPedidoByIdEstablishment(@PathVariable("idestabelecimento")
+    @GetMapping("/getPedidosByIdEstablishment")
+    public ResponseEntity<List<PedidoResponseDTO>> getAllPedidoByIdEstablishment(@RequestHeader("idestabelecimento")
                                                                                  int idestabelecimento) {
         return new ResponseEntity<>(this.service.getAllPedidoByIdEstablishment(idestabelecimento), HttpStatus.OK);
     }
 
-    @GetMapping("/getPedidos/{idestabelecimento}/{paymentType}")
+    @GetMapping("/getPedidosByIdEstablishmentPayment")
     public ResponseEntity<List<PedidoResponseDTO>> getAllPedidoByEstablishmentAndByPaymentType(
-                                                                                @PathVariable("idestabelecimento")
+                                                                                @RequestHeader("idestabelecimento")
                                                                                 int idestabelecimento,
-                                                                                @PathVariable("paymentType")
+                                                                                @RequestHeader("paymentType")
                                                                                 String paymentType) {
         return new ResponseEntity<>(this.service.getAllPedidoByEstablishmentAndByPaymentType(
                 idestabelecimento, paymentType), HttpStatus.OK);
     }
 
-    @GetMapping("/getPedidosByUser/{iduser}")
-    public ResponseEntity<List<PedidoResponseDTO>> getAllPedidoByUser(@PathVariable("iduser") String iduser) {
+    @GetMapping("/getPedidosByUser")
+    public ResponseEntity<List<PedidoResponseDTO>> getAllPedidoByUser(@RequestHeader("iduser") String iduser) {
         return new ResponseEntity<>(this.service.getAllPedidoByUser(iduser), HttpStatus.OK);
     }
 
-    @GetMapping("/getPedidosByUser/{iduser}/{paymentType}")
+    @GetMapping("/getPedidosByUserPayment")
     public ResponseEntity<List<PedidoResponseDTO>> getPedidoByUserAndByPaymentType(
-            @PathVariable("iduser")
+            @RequestHeader("iduser")
             String iduser,
-            @PathVariable("paymentType")
+            @RequestHeader("paymentType")
             String paymentType) {
         return new ResponseEntity<>(this.service.getPedidoByUserAndByPaymentType(
                 iduser, paymentType), HttpStatus.OK);
     }
 
-    @GetMapping("/getPedidosByUserPagination/{iduser}/{paymentType}/{pageNumber}/{pageSize}")
+    @GetMapping("/getPedidosByUserPaymentPagination")
     public ResponseEntity<List<PedidoResponseDTO>> getPedidoByUserAndByPaymentTypeWithPagination(
-            @PathVariable("iduser")
+            @RequestHeader("iduser")
             String iduser,
-            @PathVariable("paymentType")
+            @RequestHeader("paymentType")
             String paymentType,
-            @PathVariable("pageNumber")
+            @RequestHeader("pageNumber")
             int pageNumber,
-            @PathVariable("pageSize")
+            @RequestHeader("pageSize")
             int pageSize) {
         return new ResponseEntity<>(this.service.getPedidoByUserAndByPaymentTypeWhitPagination(
                 iduser, paymentType, pageNumber, pageSize), HttpStatus.OK);
     }
 
-    @GetMapping("/getPedidosByUserWithDatePagination/{iduser}/{startDate}/{endDate}/{pageNumber}/{pageSize}")
+    @GetMapping("/getPedidosByUserWithDatePagination")
     public ResponseEntity<List<PedidoResponseDTO>> getPedidoByUserWithDatePagination(
-            @PathVariable("iduser")
+            @RequestHeader("iduser")
             String iduser,
-            @PathVariable("startDate")
+            @RequestHeader("startDate")
             String startDate,
-            @PathVariable("endDate")
+            @RequestHeader("endDate")
             String endDate,
-            @PathVariable("pageNumber")
+            @RequestHeader("pageNumber")
             int pageNumber,
-            @PathVariable("pageSize")
+            @RequestHeader("pageSize")
             int pageSize) {
         return new ResponseEntity<>(this.service.getAllPedidoByUserWithDateAndPagination(
                 iduser, startDate, endDate, pageNumber, pageSize), HttpStatus.OK);
     }
 
-    @GetMapping("/getById/{idpedido}")
-    public ResponseEntity<PedidoResponseDTO> getPedidoById(@PathVariable("idpedido") Long idpedido) {
+    @GetMapping("/getById")
+    public ResponseEntity<PedidoResponseDTO> getPedidoById(@RequestHeader("idpedido") Long idpedido) {
         return new ResponseEntity<>(this.service.getPedidoById(idpedido), HttpStatus.OK);
     }
 
-    @GetMapping("/getPedidoByEstablishmentWithDatePagination/{idestabelecimento}/{startDate}/{endDate}/{pageNumber}/{pageSize}")
+    @GetMapping("/getPedidoByEstablishmentWithDatePagination")
     public ResponseEntity<List<PedidoResponseDTO>> getPedidoByEstablishmentWithDatePagination(
-            @PathVariable("idestabelecimento")
+            @RequestHeader("idestabelecimento")
             int idestabelecimento,
-            @PathVariable("startDate")
+            @RequestHeader("startDate")
             String startDate,
-            @PathVariable("endDate")
+            @RequestHeader("endDate")
             String endDate,
-            @PathVariable("pageNumber")
+            @RequestHeader("pageNumber")
             int pageNumber,
-            @PathVariable("pageSize")
+            @RequestHeader("pageSize")
             int pageSize) {
         return new ResponseEntity<>(this.service.getAllPedidoEstablishmentWithDateAndPagination(
                 idestabelecimento, startDate, endDate, pageNumber, pageSize), HttpStatus.OK);
