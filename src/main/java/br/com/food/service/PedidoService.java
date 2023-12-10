@@ -134,6 +134,7 @@ public class PedidoService {
                 pedido.getDia(),
                 pedido.getHora(),
                 pedido.getTotal(),
+                pedido.getUser().getNome(),
                 pedido.getUser().getId(),
                 pedido.getTipoPagamento(),
                 new ArrayList<>()

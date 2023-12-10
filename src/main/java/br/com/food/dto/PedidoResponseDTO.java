@@ -8,14 +8,16 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-public record PedidoResponseDTO(Long idpedido,
-                                Date data,
-                                String ano,
-                                String mes,
-                                String dia,
-                                String hora,
-                                BigDecimal total,
-                                String iduser,
-                                TipoPagamento tipoPagamento,
-                                List<Item> items) {
-}
+public record PedidoResponseDTO(
+        Long idpedido,
+        Date data,
+        String ano,
+        String mes,
+        String dia,
+        String hora,
+        BigDecimal total,
+        String userName,
+        String iduser,
+        TipoPagamento tipoPagamento,
+        List<Item> items
+) { }

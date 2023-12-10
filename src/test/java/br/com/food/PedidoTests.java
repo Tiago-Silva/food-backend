@@ -205,6 +205,7 @@ public class PedidoTests {
                 "13",
                 "12:00",
                 new BigDecimal("25.00"),
+                user.getNome(),
                 user.getId(),
                 TipoPagamento.PIX,
                 itemList
