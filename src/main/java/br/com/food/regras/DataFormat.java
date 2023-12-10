@@ -38,11 +38,12 @@ public class DataFormat {
         return dataFim;
     }
 
-    public static Date FormatData(String data,String pattern) {
+    public Date FormatData(String data,String pattern) {
         DateFormat format = new SimpleDateFormat(pattern);
         Date d = null;
         try {
             d = format.parse(data);
+            System.out.println(d);
         } catch (ParseException e) {
             e.printStackTrace();
         }

@@ -18,7 +18,7 @@ public class PedidoService {
     private final PedidoRepository repository;
     public PedidoService(PedidoRepository repository) { this.repository = repository; }
 
-    private DataFormat dataFormat;
+    private DataFormat dataFormat = new DataFormat();;
 
     public void savePedido(PedidoRequestDTO requestDTO) {
         if (requestDTO == null || requestDTO.items().isEmpty() || requestDTO.iduser() == null) {
@@ -100,8 +100,8 @@ public class PedidoService {
 
         return this.repository.getAllPedidoByUserWithDataAndPagination(
                 iduser,
-                this.dataFormat.FormatDataInicio(startDate),
-                this.dataFormat.FormatDataFim(endDate),
+                this.dataFormat.FormatData(startDate, "dd/MM/yyyy"),
+                this.dataFormat.FormatData(endDate, "dd/MM/yyyy"),
                 pageNumber,
                 pageSize
         ).stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
@@ -118,8 +118,8 @@ public class PedidoService {
         this.dataFormat = new DataFormat();
         return this.repository.getAllPedidoEstablishmentWithDataAndPagination(
                 idestabelecimento,
-                this.dataFormat.FormatDataInicio(startDate),
-                this.dataFormat.FormatDataFim(endDate),
+                this.dataFormat.FormatData(startDate, "dd/MM/yyyy"),
+                this.dataFormat.FormatData(endDate, "dd/MM/yyyy"),
                 pageNumber,
                 pageSize
         ).stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
