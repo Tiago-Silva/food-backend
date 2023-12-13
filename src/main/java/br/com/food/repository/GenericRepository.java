@@ -1,5 +1,7 @@
 package br.com.food.repository;
 
+import br.com.food.entity.Estabelecimento;
+import br.com.food.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -614,6 +616,46 @@ public abstract class GenericRepository {
 
         return countTypedQuery.getSingleResult();
     }
+
+    public <T> List<T> getByTwoEntitiesAndPropertyNameAndEntityId(
+            Class<T> entityClass,
+            String firstEntityJoinName,
+            String secondEntityJoinName,
+            String propertySeachName,
+            String entityIdNameToSecondJoinName,
+            String orderByPropertyName,
+            String stringForSearch,
+            int idSecondJoin) {
+
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> query = builder.createQuery(entityClass);
+        Root<T> root = query.from(entityClass);
+
+        Join<T, User> userJoin = root.join(firstEntityJoinName);
+        Join<User, Estabelecimento> estabelecimentoJoin = userJoin.join(secondEntityJoinName);
+
+        Path<String> userNamePath = userJoin.get(propertySeachName);
+        Path<Long> idEstabelecimentoPath = estabelecimentoJoin.get(entityIdNameToSecondJoinName);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        Predicate nomeEquals = builder.equal(userNamePath, stringForSearch);
+        predicates.add(nomeEquals);
+
+        Predicate estabelecimentoEquals = builder.equal(idEstabelecimentoPath, idSecondJoin);
+        predicates.add(estabelecimentoEquals);
+
+        query.where(predicates.toArray(new Predicate[0]));
+
+        if (orderByPropertyName != null && !orderByPropertyName.isEmpty()) {
+            query.orderBy(builder.asc(root.get(orderByPropertyName)));
+        }
+
+        TypedQuery<T> typedQuery = em.createQuery(query);
+
+        return typedQuery.getResultList();
+    }
+
 
     @Transactional(propagation= Propagation.REQUIRED, isolation= Isolation.SERIALIZABLE, readOnly = false)
     public void save(Object objeto) {

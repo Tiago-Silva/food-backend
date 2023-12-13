@@ -45,11 +45,13 @@ public class PedidoRepository extends GenericRepository {
         );
     }
 
-    public List<Pedido> getAllPedidoByUserWithDataAndPagination(String iduser,
-                                                                Date startDate,
-                                                                Date endDate,
-                                                                int pageNumber,
-                                                                int pageSize) {
+    public List<Pedido> getAllPedidoByUserWithDataAndPagination(
+            String iduser,
+            Date startDate,
+            Date endDate,
+            int pageNumber,
+            int pageSize
+    ) {
         return super.getJoinColumnWithDateAndPagination(
                 Pedido.class,
                 "user",
@@ -64,11 +66,13 @@ public class PedidoRepository extends GenericRepository {
         );
     }
 
-    public List<Pedido> getAllPedidoEstablishmentWithDataAndPagination(int idEstabelecimento,
-                                                                Date startDate,
-                                                                Date endDate,
-                                                                int pageNumber,
-                                                                int pageSize) {
+    public List<Pedido> getAllPedidoEstablishmentWithDataAndPagination(
+            int idEstabelecimento,
+            Date startDate,
+            Date endDate,
+            int pageNumber,
+            int pageSize
+    ) {
         return super.getTwoEntitiesByForeignKeyWithDateAndPagination(
                 Pedido.class,
                 "user",
@@ -96,10 +100,12 @@ public class PedidoRepository extends GenericRepository {
         );
     }
 
-    public List<Pedido> getPedidoByUserAndByPaymentTypeWhitPagination(String iduser,
-                                                                    String paymentType,
-                                                                    int pageNumber,
-                                                                    int pageSize) {
+    public List<Pedido> getPedidoByUserAndByPaymentTypeWhitPagination(
+            String iduser,
+            String paymentType,
+            int pageNumber,
+            int pageSize
+    ) {
         return super.getEntitiesByForeignKeyAndWithConditionalWithPagination(
                 Pedido.class,
                 "user",
@@ -110,6 +116,19 @@ public class PedidoRepository extends GenericRepository {
                 TipoPagamento.valueOf(paymentType),
                 pageNumber,
                 pageSize
+        );
+    }
+
+    public List<Pedido> getPedidoByClientName(int idestabelecimento, String clientName) {
+        return super.getByTwoEntitiesAndPropertyNameAndEntityId(
+                Pedido.class,
+                "user",
+                "estabelecimento",
+                "nome",
+                "idestabelecimento",
+                "tipoPagamento",
+                clientName,
+                idestabelecimento
         );
     }
 }

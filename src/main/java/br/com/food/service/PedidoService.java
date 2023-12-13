@@ -74,10 +74,12 @@ public class PedidoService {
         return this.mapPedidoToResponseDTO(this.repository.getEntityById(Pedido.class, idpedido));
     }
 
-    public List<PedidoResponseDTO> getPedidoByUserAndByPaymentTypeWhitPagination(String iduser,
-                                                                                 String paymentType,
-                                                                                 int pageNumber,
-                                                                                 int pageSize) {
+    public List<PedidoResponseDTO> getPedidoByUserAndByPaymentTypeWhitPagination(
+            String iduser,
+             String paymentType,
+             int pageNumber,
+             int pageSize
+    ) {
         if (iduser == null || paymentType == null || pageNumber < 0 || pageSize < 0) {
             throw new IllegalArgumentException("Parametros inválidos, verifique!!!");
         }
@@ -89,11 +91,13 @@ public class PedidoService {
         ).stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
     }
 
-    public List<PedidoResponseDTO> getAllPedidoByUserWithDateAndPagination(String iduser,
-                                                                           String startDate,
-                                                                           String endDate,
-                                                                           int pageNumber,
-                                                                           int pageSize) {
+    public List<PedidoResponseDTO> getAllPedidoByUserWithDateAndPagination(
+            String iduser,
+            String startDate,
+            String endDate,
+            int pageNumber,
+            int pageSize
+    ) {
         if (iduser == null || startDate == null || endDate == null || pageNumber < 0 || pageSize < 0) {
             throw new IllegalArgumentException("Parametros inválidos, verifique!!!");
         }
@@ -107,11 +111,13 @@ public class PedidoService {
         ).stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
     }
 
-    public List<PedidoResponseDTO> getAllPedidoEstablishmentWithDateAndPagination(int idestabelecimento,
-                                                                                  String startDate,
-                                                                                  String endDate,
-                                                                                  int pageNumber,
-                                                                                  int pageSize) {
+    public List<PedidoResponseDTO> getAllPedidoEstablishmentWithDateAndPagination(
+            int idestabelecimento,
+            String startDate,
+            String endDate,
+            int pageNumber,
+            int pageSize
+    ) {
         if (idestabelecimento <= 0 || startDate == null || endDate == null || pageNumber < 0 || pageSize < 0) {
             throw new IllegalArgumentException("Parametros inválidos, verifique!!!");
         }
@@ -123,6 +129,16 @@ public class PedidoService {
                 pageNumber,
                 pageSize
         ).stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
+    }
+
+    public List<PedidoResponseDTO> getPedidoByClientName(int idestabelecimento, String clientName) {
+
+        if (idestabelecimento <= 0 || clientName == null) {
+            throw new IllegalArgumentException("Parametros inválidos, verifique!!!");
+        }
+
+        return this.repository.getPedidoByClientName(idestabelecimento, clientName)
+                .stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
     }
 
     public PedidoResponseDTO mapPedidoToResponseDTO(Pedido pedido) {

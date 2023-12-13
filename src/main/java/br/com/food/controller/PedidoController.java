@@ -112,4 +112,14 @@ public class PedidoController {
         return new ResponseEntity<>(this.service.getAllPedidoEstablishmentWithDateAndPagination(
                 idestabelecimento, startDate, endDate, pageNumber, pageSize), HttpStatus.OK);
     }
+
+    @GetMapping("/getPedidosByClientName")
+    public ResponseEntity<List<PedidoResponseDTO>> getPedidoByClientName(
+            @RequestHeader("idestabelecimento")
+            int idestabelecimento,
+            @RequestHeader("clientName")
+            String clientName
+    ) {
+          return new ResponseEntity<>(this.service.getPedidoByClientName(idestabelecimento, clientName), HttpStatus.OK);
+    }
 }
