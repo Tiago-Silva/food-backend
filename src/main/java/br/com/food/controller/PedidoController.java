@@ -93,7 +93,7 @@ public class PedidoController {
     }
 
     @GetMapping("/getById")
-    public ResponseEntity<PedidoResponseDTO> getPedidoById(@RequestHeader("idpedido") Long idpedido) {
+    public ResponseEntity<List<PedidoResponseDTO>> getPedidoById(@RequestHeader("idpedido") Long idpedido) {
         return new ResponseEntity<>(this.service.getPedidoById(idpedido), HttpStatus.OK);
     }
 

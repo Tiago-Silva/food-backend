@@ -75,7 +75,28 @@ public abstract class GenericRepository {
 
     public <T> T getEntityById(Class<T> entityClass, Long id) { return this.em.find(entityClass, id); }
 
-    public <T> T getEntityByProperty(Class<T> classe, String propertySeachName, String property) {
+    public <T> T getEntityByProperty(
+        Class<T> classe,
+        String propertySeachName,
+        String property
+    ) {
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = builder.createQuery(classe);
+        Root<T> root = criteriaQuery.from(classe);
+        criteriaQuery.select(root);
+
+        criteriaQuery.where(builder.equal(root.get(propertySeachName), property));
+
+        TypedQuery<T> query = this.em.createQuery(criteriaQuery);
+
+        return query.getSingleResult();
+    }
+
+    public <T> T getEntityByProperty(
+            Class<T> classe,
+            String propertySeachName,
+            Long property
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = builder.createQuery(classe);
         Root<T> root = criteriaQuery.from(classe);
@@ -101,9 +122,14 @@ public abstract class GenericRepository {
      * @return getResultList()
      * @param <T> generico
      */
-    public <T> List<T> getEntitiesByForeignKey(Class<T> entityClass, String entityName, String entityId,
-                                               String foreignKeyPropertyName,
-                                               int foreignKeyId, String orderByPropertyName) {
+    public <T> List<T> getEntitiesByForeignKey(
+            Class<T> entityClass,
+            String entityName,
+            String entityId,
+            String foreignKeyPropertyName,
+            int foreignKeyId,
+            String orderByPropertyName
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
         Root<T> root = criteriaQuery.from(entityClass);
@@ -140,13 +166,15 @@ public abstract class GenericRepository {
      *Nesse exemplo, se eu passar firstConditionalName = is_client, firstConditional = true,
      * estarei buscando todos os clientes
      */
-    public <T, E extends Enum<E>> List<T> getEntitiesByForeignKeyAndWithConditional(Class<T> entityClass,
-                                                    String entityName,
-                                                    String foreignKeyIdName,
-                                                    int foreignKeyId,
-                                                    String orderByPropertyName,
-                                                    String conditionalName,
-                                                    E conditional) {
+    public <T, E extends Enum<E>> List<T> getEntitiesByForeignKeyAndWithConditional(
+            Class<T> entityClass,
+            String entityName,
+            String foreignKeyIdName,
+            int foreignKeyId,
+            String orderByPropertyName,
+            String conditionalName,
+            E conditional
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
         Root<T> root = criteriaQuery.from(entityClass);
@@ -173,14 +201,16 @@ public abstract class GenericRepository {
         return query.getResultList();
     }
 
-    public <T, E extends Enum<E>> List<T> getTwoEntitiesByForeignKeyAndWithConditional(Class<T> entityClass,
-                                                            String firstEntityName,
-                                                            String secondEntityName,
-                                                            String foreignKeyPropertyName,
-                                                            int foreignKeyId,
-                                                            String orderByPropertyName,
-                                                            String conditionalName,
-                                                            E conditional) {
+    public <T, E extends Enum<E>> List<T> getTwoEntitiesByForeignKeyAndWithConditional(
+            Class<T> entityClass,
+            String firstEntityName,
+            String secondEntityName,
+            String foreignKeyPropertyName,
+            int foreignKeyId,
+            String orderByPropertyName,
+            String conditionalName,
+            E conditional
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
         Root<T> root = criteriaQuery.from(entityClass);
@@ -207,9 +237,14 @@ public abstract class GenericRepository {
         return query.getResultList();
     }
 
-    public <T> List<T> getTwoEntitiesByForeignKey(Class<T> entityClass, String firstEntityName,
-                                                  String secondEntityName, String foreignKeyPropertyName,
-                                                  int foreignKeyId, String orderByPropertyName) {
+    public <T> List<T> getTwoEntitiesByForeignKey(
+            Class<T> entityClass,
+            String firstEntityName,
+            String secondEntityName,
+            String foreignKeyPropertyName,
+            int foreignKeyId,
+            String orderByPropertyName
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
         Root<T> root = criteriaQuery.from(entityClass);
@@ -235,8 +270,13 @@ public abstract class GenericRepository {
      * Metodo irá realizar um JoinColuon em uma tabela de relacionamento para traz
      *
      */
-    public <T> List<T> getJoinColumn(Class<T> entityClass, String entityJoinName, String entityId,
-                                     int foreignKeyId, String orderByPropertyName) {
+    public <T> List<T> getJoinColumn(
+            Class<T> entityClass,
+            String entityJoinName,
+            String entityId,
+            int foreignKeyId,
+            String orderByPropertyName
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> query = builder.createQuery(entityClass);
         Root<T> root = query.from(entityClass);
@@ -259,8 +299,13 @@ public abstract class GenericRepository {
         return typedQuery.getResultList();
     }
 
-    public <T> List<T> getJoinColumn(Class<T> entityClass, String entityJoinName, String entityId,
-                                     String foreignKeyId, String orderByPropertyName) {
+    public <T> List<T> getJoinColumn(
+            Class<T> entityClass,
+            String entityJoinName,
+            String entityId,
+             String foreignKeyId,
+            String orderByPropertyName
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> query = builder.createQuery(entityClass);
         Root<T> root = query.from(entityClass);
@@ -283,11 +328,13 @@ public abstract class GenericRepository {
         return typedQuery.getResultList();
     }
 
-    public <T> List<T> getJoinColumn(Class<T> entityClass,
-                                     String entityJoinName,
-                                     String entityId,
-                                     Long foreignKeyId,
-                                     String orderByPropertyName) {
+    public <T> List<T> getJoinColumn(
+            Class<T> entityClass,
+            String entityJoinName,
+            String entityId,
+            Long foreignKeyId,
+            String orderByPropertyName
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> query = builder.createQuery(entityClass);
         Root<T> root = query.from(entityClass);
@@ -310,16 +357,18 @@ public abstract class GenericRepository {
         return typedQuery.getResultList();
     }
 
-    public <T> List<T> getJoinColumnWithDateAndPagination(Class<T> entityClass,
-                                                          String entityJoinName,
-                                                          String entityId,
-                                                          String foreignKeyId,
-                                                          String dateFieldName,
-                                                          Date startDate,
-                                                          Date endDate,
-                                                          String orderByPropertyName,
-                                                          int pageNumber,
-                                                          int pageSize) {
+    public <T> List<T> getJoinColumnWithDateAndPagination(
+            Class<T> entityClass,
+            String entityJoinName,
+            String entityId,
+            String foreignKeyId,
+            String dateFieldName,
+            Date startDate,
+            Date endDate,
+            String orderByPropertyName,
+            int pageNumber,
+            int pageSize
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> query = builder.createQuery(entityClass);
         Root<T> root = query.from(entityClass);
@@ -356,16 +405,18 @@ public abstract class GenericRepository {
 //        return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
     }
 
-    public <T> Page<T> getJoinColumnWithDateAndPagination(Class<T> entityClass,
-                                                          String entityJoinName,
-                                                          String entityId,
-                                                          int foreignKeyId,
-                                                          String dateFieldName,
-                                                          Date startDate,
-                                                          Date endDate,
-                                                          String orderByPropertyName,
-                                                          int pageNumber,
-                                                          int pageSize) {
+    public <T> Page<T> getJoinColumnWithDateAndPagination(
+            Class<T> entityClass,
+            String entityJoinName,
+            String entityId,
+            int foreignKeyId,
+            String dateFieldName,
+            Date startDate,
+            Date endDate,
+            String orderByPropertyName,
+            int pageNumber,
+            int pageSize
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> query = builder.createQuery(entityClass);
         Root<T> root = query.from(entityClass);
@@ -402,17 +453,19 @@ public abstract class GenericRepository {
         return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
     }
 
-    public <T> List<T> getTwoEntitiesByForeignKeyWithDateAndPagination(Class<T> entityClass,
-                                                                       String firstEntityName,
-                                                                       String secondEntityName,
-                                                                       String foreignKeyPropertyName,
-                                                                       int foreignKeyId,
-                                                                       String dateFieldName,
-                                                                       Date startDate,
-                                                                       Date endDate,
-                                                                       String orderByPropertyName,
-                                                                       int pageNumber,
-                                                                       int pageSize) {
+    public <T> List<T> getTwoEntitiesByForeignKeyWithDateAndPagination(
+            Class<T> entityClass,
+            String firstEntityName,
+            String secondEntityName,
+            String foreignKeyPropertyName,
+            int foreignKeyId,
+            String dateFieldName,
+            Date startDate,
+            Date endDate,
+            String orderByPropertyName,
+            int pageNumber,
+            int pageSize
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
         Root<T> root = criteriaQuery.from(entityClass);
@@ -441,13 +494,15 @@ public abstract class GenericRepository {
         return typedQuery.getResultList();
     }
 
-    public <T, E extends Enum<E>> List<T> getEntitiesByForeignKeyAndWithConditional(Class<T> entityClass,
-                                                                                    String entityName,
-                                                                                    String foreignKeyIdName,
-                                                                                    String foreignKeyId,
-                                                                                    String orderByPropertyName,
-                                                                                    String conditionalName,
-                                                                                    E conditional) {
+    public <T, E extends Enum<E>> List<T> getEntitiesByForeignKeyAndWithConditional(
+            Class<T> entityClass,
+            String entityName,
+            String foreignKeyIdName,
+            String foreignKeyId,
+            String orderByPropertyName,
+            String conditionalName,
+            E conditional
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
         Root<T> root = criteriaQuery.from(entityClass);
@@ -518,12 +573,14 @@ public abstract class GenericRepository {
 //        return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
     }
 
-    private <T, E extends Enum<E>> long getTotalCount(Class<T> entityClass,
-                                                      String entityName,
-                                                      String foreignKeyIdName,
-                                                      String foreignKeyId,
-                                                      String conditionalName,
-                                                      E conditional) {
+    private <T, E extends Enum<E>> long getTotalCount(
+            Class<T> entityClass,
+            String entityName,
+            String foreignKeyIdName,
+            String foreignKeyId,
+            String conditionalName,
+            E conditional
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
         Root<T> root = countQuery.from(entityClass);
@@ -545,10 +602,12 @@ public abstract class GenericRepository {
         return countTypedQuery.getSingleResult();
     }
 
-    private <T> long getTotalCount(Class<T> entityClass,
-                                  String entityName,
-                                  String foreignKeyIdName,
-                                  String foreignKeyId) {
+    private <T> long getTotalCount(
+            Class<T> entityClass,
+            String entityName,
+            String foreignKeyIdName,
+            String foreignKeyId
+    ) {
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
         Root<T> root = countQuery.from(entityClass);
@@ -567,10 +626,12 @@ public abstract class GenericRepository {
         return countTypedQuery.getSingleResult();
     }
 
-    private <T> long getTotalCount(Class<T> entityClass,
-                                   String entityName,
-                                   String foreignKeyIdName,
-                                   int foreignKeyId) {
+    private <T> long getTotalCount(
+            Class<T> entityClass,
+            String entityName,
+            String foreignKeyIdName,
+            int foreignKeyId
+    ) {
 
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
@@ -590,14 +651,16 @@ public abstract class GenericRepository {
         return countTypedQuery.getSingleResult();
     }
 
-    private <T> long getTotalCountTwoEntity(Class<T> entityClass,
-                                            String firstEntityName,
-                                            String secondEntityName,
-                                            String foreignKeyPropertyName,
-                                            int foreignKeyId,
-                                            String dateFieldName,
-                                            Date startDate,
-                                            Date endDate) {
+    private <T> long getTotalCountTwoEntity(
+            Class<T> entityClass,
+            String firstEntityName,
+            String secondEntityName,
+            String foreignKeyPropertyName,
+            int foreignKeyId,
+            String dateFieldName,
+            Date startDate,
+            Date endDate
+    ) {
 
         CriteriaBuilder builder = this.getCriteriaBuilder();
         CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);

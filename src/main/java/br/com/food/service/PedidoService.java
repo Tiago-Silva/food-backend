@@ -67,11 +67,18 @@ public class PedidoService {
                 .stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
     }
 
-    public PedidoResponseDTO getPedidoById(Long idpedido) {
+    public List<PedidoResponseDTO> getPedidoById(Long idpedido) {
         if (idpedido <= 0) {
             throw new IllegalArgumentException("idpedido inválido ou null");
         }
-        return this.mapPedidoToResponseDTO(this.repository.getEntityById(Pedido.class, idpedido));
+        System.out.println("id: " + idpedido);
+        List<PedidoResponseDTO> list = new ArrayList<>();
+        list.add(this.mapPedidoToResponseDTO(this.repository.getEntityById(
+                Pedido.class,
+                idpedido
+        )));
+
+        return list;
     }
 
     public List<PedidoResponseDTO> getPedidoByUserAndByPaymentTypeWhitPagination(
