@@ -6,6 +6,9 @@ import br.com.food.entity.Pedido;
 import br.com.food.entity.User;
 import br.com.food.regras.DataFormat;
 import br.com.food.repository.PedidoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -67,18 +70,22 @@ public class PedidoService {
                 .stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
     }
 
-    public List<PedidoResponseDTO> getPedidoById(Long idpedido) {
+    public Page<PedidoResponseDTO> getPedidoById(Long idpedido) {
         if (idpedido <= 0) {
             throw new IllegalArgumentException("idpedido inválido ou null");
         }
-        System.out.println("id: " + idpedido);
+
         List<PedidoResponseDTO> list = new ArrayList<>();
         list.add(this.mapPedidoToResponseDTO(this.repository.getEntityById(
                 Pedido.class,
                 idpedido
         )));
 
-        return list;
+        return new PageImpl<PedidoResponseDTO>(
+                list,
+                PageRequest.of(0, 5),
+                1
+        );
     }
 
     public List<PedidoResponseDTO> getPedidoByUserAndByPaymentTypeWhitPagination(
@@ -118,7 +125,7 @@ public class PedidoService {
         ).stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
     }
 
-    public List<PedidoResponseDTO> getAllPedidoEstablishmentWithDateAndPagination(
+    public Page<PedidoResponseDTO> getAllPedidoEstablishmentWithDateAndPagination(
             int idestabelecimento,
             String startDate,
             String endDate,
@@ -129,23 +136,39 @@ public class PedidoService {
             throw new IllegalArgumentException("Parametros inválidos, verifique!!!");
         }
         this.dataFormat = new DataFormat();
-        return this.repository.getAllPedidoEstablishmentWithDataAndPagination(
+        Page<Pedido> page = this.repository.getAllPedidoEstablishmentWithDataAndPagination(
                 idestabelecimento,
                 this.dataFormat.FormatData(startDate, "dd/MM/yyyy"),
                 this.dataFormat.FormatData(endDate, "dd/MM/yyyy"),
                 pageNumber,
                 pageSize
-        ).stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
+        );
+
+        return new PageImpl<PedidoResponseDTO>(
+                page.getContent().stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList()),
+                PageRequest.of(page.getNumber(), page.getSize()),
+                page.getTotalElements()
+        );
     }
 
-    public List<PedidoResponseDTO> getPedidoByClientName(int idestabelecimento, String clientName) {
+    public Page<PedidoResponseDTO> getPedidoByClientName(
+            int idestabelecimento,
+            String clientName,
+            int pageNumber,
+            int pageSize
+    ) {
 
         if (idestabelecimento <= 0 || clientName == null) {
             throw new IllegalArgumentException("Parametros inválidos, verifique!!!");
         }
 
-        return this.repository.getPedidoByClientName(idestabelecimento, clientName)
-                .stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
+        Page<Pedido> page =  this.repository.getPedidoByClientName(idestabelecimento, clientName, pageNumber, pageSize);
+
+        return new PageImpl<PedidoResponseDTO>(
+                page.getContent().stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList()),
+                PageRequest.of(page.getNumber(), pageSize),
+                page.getTotalElements()
+        );
     }
 
     public PedidoResponseDTO mapPedidoToResponseDTO(Pedido pedido) {

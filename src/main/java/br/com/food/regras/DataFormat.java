@@ -43,7 +43,6 @@ public class DataFormat {
         Date d = null;
         try {
             d = format.parse(data);
-            System.out.println(d);
         } catch (ParseException e) {
             e.printStackTrace();
         }

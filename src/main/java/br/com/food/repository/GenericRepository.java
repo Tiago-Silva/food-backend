@@ -453,6 +453,117 @@ public abstract class GenericRepository {
         return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
     }
 
+    public <T> Page<T> getByTwoEntitiesAndPropertyNameAndEntityIdPage(
+            Class<T> entityClass,
+            String firstEntityJoinName,
+            String secondEntityJoinName,
+            String propertySeachName,
+            String entityIdNameToSecondJoinName,
+            String orderByPropertyName,
+            String stringForSearch,
+            int idSecondJoin,
+            int pageNumber,
+            int pageSize
+    ) {
+
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> query = builder.createQuery(entityClass);
+        Root<T> root = query.from(entityClass);
+
+        Join<T, User> userJoin = root.join(firstEntityJoinName);
+        Join<User, Estabelecimento> estabelecimentoJoin = userJoin.join(secondEntityJoinName);
+
+        Path<String> userNamePath = userJoin.get(propertySeachName);
+        Path<Long> idEstabelecimentoPath = estabelecimentoJoin.get(entityIdNameToSecondJoinName);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        Predicate nomeEquals = builder.equal(userNamePath, stringForSearch);
+        predicates.add(nomeEquals);
+
+        Predicate estabelecimentoEquals = builder.equal(idEstabelecimentoPath, idSecondJoin);
+        predicates.add(estabelecimentoEquals);
+
+        query.where(predicates.toArray(new Predicate[0]));
+
+        if (orderByPropertyName != null && !orderByPropertyName.isEmpty()) {
+            query.orderBy(builder.asc(root.get(orderByPropertyName)));
+        }
+
+        TypedQuery<T> typedQuery = em.createQuery(query);
+        typedQuery.setFirstResult((pageNumber - 1) * pageSize);
+        typedQuery.setMaxResults(pageSize);
+
+        List<T> resultList = typedQuery.getResultList();
+
+        long total = getTotalCountTwoEntityByPropertyName(
+                entityClass,
+                firstEntityJoinName,
+                secondEntityJoinName,
+                propertySeachName,
+                entityIdNameToSecondJoinName,
+                stringForSearch,
+                idSecondJoin
+        );
+
+        return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
+    }
+
+    public <T> Page<T> getTwoEntitiesByForeignKeyWithDateAndPaginationPage(
+            Class<T> entityClass,
+            String firstEntityName,
+            String secondEntityName,
+            String foreignKeyPropertyName,
+            int foreignKeyId,
+            String dateFieldName,
+            Date startDate,
+            Date endDate,
+            String orderByPropertyName,
+            int pageNumber,
+            int pageSize
+    ) {
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
+        Root<T> root = criteriaQuery.from(entityClass);
+        criteriaQuery.select(root);
+
+        List<Predicate> predicates = new ArrayList<>();
+        Path<Object> foreignKeyPath = root.get(firstEntityName).get(secondEntityName).get(foreignKeyPropertyName);
+        predicates.add(builder.equal(foreignKeyPath, foreignKeyId));
+
+        if (startDate != null && endDate != null) {
+            Predicate datePredicate = builder.between(root.get(dateFieldName), startDate, endDate);
+            predicates.add(datePredicate);
+        }
+
+        Predicate combinedPredicate = builder.and(predicates.toArray(new Predicate[0]));
+        criteriaQuery.where(combinedPredicate);
+
+        if (orderByPropertyName != null && !orderByPropertyName.isEmpty()) {
+            criteriaQuery.orderBy(builder.asc(root.get(orderByPropertyName)));
+        }
+
+        TypedQuery<T> typedQuery = em.createQuery(criteriaQuery);
+        typedQuery.setFirstResult((pageNumber - 1) * pageSize);
+        typedQuery.setMaxResults(pageSize);
+
+        List<T> resultList = typedQuery.getResultList();
+
+        long total = getTotalCountTwoEntity(
+                entityClass,
+                firstEntityName,
+                secondEntityName,
+                foreignKeyPropertyName,
+                foreignKeyId,
+                dateFieldName,
+                startDate,
+                endDate
+        );
+
+        return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
+    }
+
+
     public <T> List<T> getTwoEntitiesByForeignKeyWithDateAndPagination(
             Class<T> entityClass,
             String firstEntityName,
@@ -573,7 +684,7 @@ public abstract class GenericRepository {
 //        return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
     }
 
-    private <T, E extends Enum<E>> long getTotalCount(
+    public <T, E extends Enum<E>> long getTotalCount(
             Class<T> entityClass,
             String entityName,
             String foreignKeyIdName,
@@ -602,7 +713,7 @@ public abstract class GenericRepository {
         return countTypedQuery.getSingleResult();
     }
 
-    private <T> long getTotalCount(
+    public <T> long getTotalCount(
             Class<T> entityClass,
             String entityName,
             String foreignKeyIdName,
@@ -626,7 +737,7 @@ public abstract class GenericRepository {
         return countTypedQuery.getSingleResult();
     }
 
-    private <T> long getTotalCount(
+    public <T> long getTotalCount(
             Class<T> entityClass,
             String entityName,
             String foreignKeyIdName,
@@ -651,7 +762,7 @@ public abstract class GenericRepository {
         return countTypedQuery.getSingleResult();
     }
 
-    private <T> long getTotalCountTwoEntity(
+    public <T> long getTotalCountTwoEntity(
             Class<T> entityClass,
             String firstEntityName,
             String secondEntityName,
@@ -677,6 +788,39 @@ public abstract class GenericRepository {
 
         TypedQuery<Long> countTypedQuery = em.createQuery(countQuery);
 
+        return countTypedQuery.getSingleResult();
+    }
+
+    public <T> long getTotalCountTwoEntityByPropertyName(
+            Class<T> entityClass,
+            String firstEntityJoinName,
+            String secondEntityJoinName,
+            String propertySeachName,
+            String entityIdNameToSecondJoinName,
+            String stringForSearch,
+            int idSecondJoin
+    ) {
+
+        CriteriaBuilder countBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> countQuery = countBuilder.createQuery(Long.class);
+        Root<T> countRoot = countQuery.from(entityClass);
+
+        Join<T, User> countUserJoin = countRoot.join(firstEntityJoinName);
+        Join<User, Estabelecimento> countEstabelecimentoJoin = countUserJoin.join(secondEntityJoinName);
+
+        Path<String> countUserNamePath = countUserJoin.get(propertySeachName);
+        Path<Long> countIdEstabelecimentoPath = countEstabelecimentoJoin.get(entityIdNameToSecondJoinName);
+
+        List<Predicate> countPredicates = new ArrayList<>();
+        Predicate countNomeEquals = countBuilder.equal(countUserNamePath, stringForSearch);
+        countPredicates.add(countNomeEquals);
+
+        Predicate countEstabelecimentoEquals = countBuilder.equal(countIdEstabelecimentoPath, idSecondJoin);
+        countPredicates.add(countEstabelecimentoEquals);
+
+        countQuery.select(countBuilder.count(countRoot)).where(countPredicates.toArray(new Predicate[0]));
+
+        TypedQuery<Long> countTypedQuery = em.createQuery(countQuery);
         return countTypedQuery.getSingleResult();
     }
 
@@ -718,7 +862,6 @@ public abstract class GenericRepository {
 
         return typedQuery.getResultList();
     }
-
 
     @Transactional(propagation= Propagation.REQUIRED, isolation= Isolation.SERIALIZABLE, readOnly = false)
     public void save(Object objeto) {

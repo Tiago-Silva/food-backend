@@ -3,6 +3,7 @@ package br.com.food.controller;
 import br.com.food.dto.PedidoRequestDTO;
 import br.com.food.dto.PedidoResponseDTO;
 import br.com.food.service.PedidoService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -93,12 +94,12 @@ public class PedidoController {
     }
 
     @GetMapping("/getById")
-    public ResponseEntity<List<PedidoResponseDTO>> getPedidoById(@RequestHeader("idpedido") Long idpedido) {
+    public ResponseEntity<Page<PedidoResponseDTO>> getPedidoById(@RequestHeader("idpedido") Long idpedido) {
         return new ResponseEntity<>(this.service.getPedidoById(idpedido), HttpStatus.OK);
     }
 
     @GetMapping("/getPedidoByEstablishmentWithDatePagination")
-    public ResponseEntity<List<PedidoResponseDTO>> getPedidoByEstablishmentWithDatePagination(
+    public ResponseEntity<Page<PedidoResponseDTO>> getPedidoByEstablishmentWithDatePagination(
             @RequestHeader("idestabelecimento")
             int idestabelecimento,
             @RequestHeader("startDate")
@@ -114,12 +115,17 @@ public class PedidoController {
     }
 
     @GetMapping("/getPedidosByClientName")
-    public ResponseEntity<List<PedidoResponseDTO>> getPedidoByClientName(
+    public ResponseEntity<Page<PedidoResponseDTO>> getPedidoByClientName(
             @RequestHeader("idestabelecimento")
             int idestabelecimento,
             @RequestHeader("clientName")
-            String clientName
+            String clientName,
+            @RequestHeader("pageNumber")
+            int pageNumber,
+            @RequestHeader("pageSize")
+            int pageSize
     ) {
-          return new ResponseEntity<>(this.service.getPedidoByClientName(idestabelecimento, clientName), HttpStatus.OK);
+          return new ResponseEntity<>(this.service.getPedidoByClientName(
+                  idestabelecimento, clientName, pageNumber, pageSize), HttpStatus.OK);
     }
 }

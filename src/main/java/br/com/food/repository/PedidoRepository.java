@@ -66,14 +66,14 @@ public class PedidoRepository extends GenericRepository {
         );
     }
 
-    public List<Pedido> getAllPedidoEstablishmentWithDataAndPagination(
+    public Page<Pedido> getAllPedidoEstablishmentWithDataAndPagination(
             int idEstabelecimento,
             Date startDate,
             Date endDate,
             int pageNumber,
             int pageSize
     ) {
-        return super.getTwoEntitiesByForeignKeyWithDateAndPagination(
+        return super.getTwoEntitiesByForeignKeyWithDateAndPaginationPage(
                 Pedido.class,
                 "user",
                 "estabelecimento",
@@ -119,8 +119,13 @@ public class PedidoRepository extends GenericRepository {
         );
     }
 
-    public List<Pedido> getPedidoByClientName(int idestabelecimento, String clientName) {
-        return super.getByTwoEntitiesAndPropertyNameAndEntityId(
+    public Page<Pedido> getPedidoByClientName(
+            int idestabelecimento,
+            String clientName,
+            int pageNumber,
+            int pageSize
+    ) {
+        return super.getByTwoEntitiesAndPropertyNameAndEntityIdPage(
                 Pedido.class,
                 "user",
                 "estabelecimento",
@@ -128,7 +133,9 @@ public class PedidoRepository extends GenericRepository {
                 "idestabelecimento",
                 "tipoPagamento",
                 clientName,
-                idestabelecimento
+                idestabelecimento,
+                pageNumber,
+                pageSize
         );
     }
 }
