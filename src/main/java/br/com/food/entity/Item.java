@@ -34,8 +34,9 @@ public class Item implements Serializable {
     @Size(min = 4)
     private String descricao;
 
-    @NotNull
-    private int idproduto;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idproduto")
+    private Produto produto;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idpedido")

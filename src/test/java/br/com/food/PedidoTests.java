@@ -5,6 +5,7 @@ import br.com.food.dto.PedidoRequestDTO;
 import br.com.food.dto.PedidoResponseDTO;
 import br.com.food.dto.UserRequestDTO;
 import br.com.food.entity.Item;
+import br.com.food.entity.Produto;
 import br.com.food.entity.User;
 import br.com.food.enuns.TipoPagamento;
 import br.com.food.enuns.UserRole;
@@ -90,7 +91,9 @@ public class PedidoTests {
         Item item = new Item();
         item.setDescricao("Pedido teste");
         item.setQuantidade(1);
-        item.setIdproduto(1);
+        Produto produto = new Produto();
+        produto.setIdproduto(1);
+        item.setProduto(produto);
 
         List<Item> itemList = new ArrayList<>();
         itemList.add(item);

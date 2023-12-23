@@ -3,7 +3,6 @@ package br.com.food.entity;
 import br.com.food.dto.ProdutoRequestDTO;
 import br.com.food.dto.ProdutoResponseDTO;
 import br.com.food.enuns.ProductCategory;
-import br.com.food.enuns.Promotions;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +11,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "produto")
@@ -55,6 +55,9 @@ public class Produto {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idestabelecimento")
     private Estabelecimento estabelecimento;
+
+    @OneToMany(mappedBy = "produto", fetch = FetchType.LAZY)
+    private List<Item> items;
 
     public Produto(ProdutoRequestDTO requestDTO, Estabelecimento estabelecimento) {
         this.nome = requestDTO.nome();
