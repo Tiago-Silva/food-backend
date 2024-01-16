@@ -2,6 +2,7 @@ package br.com.food.service;
 
 import br.com.food.dto.PedidoRequestDTO;
 import br.com.food.dto.PedidoResponseDTO;
+import br.com.food.entity.Item;
 import br.com.food.entity.Pedido;
 import br.com.food.entity.User;
 import br.com.food.regras.DataFormat;
@@ -27,7 +28,11 @@ public class PedidoService {
         if (requestDTO == null || requestDTO.items().isEmpty() || requestDTO.iduser() == null) {
             throw new IllegalArgumentException("Objeto null / iduser null ou itens vazio");
         }
-        this.repository.save(new Pedido(requestDTO, new User(requestDTO.iduser())));
+        for (Item item : requestDTO.items()) {
+            System.out.println(item.getDescricao());
+            System.out.println(item.getQuantidade());
+        }
+//        this.repository.save(new Pedido(requestDTO, new User(requestDTO.iduser())));
     }
 
     public void updatePedido(PedidoResponseDTO responseDTO) {

@@ -5,6 +5,7 @@ import br.com.food.entity.Item;
 import br.com.food.repository.ItemRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ public class ItemService {
                 item.getQuantidade(),
                 item.getDescricao(),
                 item.getProduto().getValor(),
-                item.getPedido().getTotal(),
+                item.getProduto().getValor().multiply(BigDecimal.valueOf(item.getQuantidade())),
                 item.getProduto().getIdproduto(),
                 item.getPedido().getIdpedido()
         );

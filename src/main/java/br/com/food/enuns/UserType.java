@@ -1,7 +1,9 @@
 package br.com.food.enuns;
 
 public enum UserType {
-    USER,
+    SYSTEM,
+    ADMIN,
     CLIENT,
-    RESPONSABLE
+    RESPONSABLE,
+    MOBILLE
 }
