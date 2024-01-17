@@ -4,6 +4,7 @@ import br.com.food.dto.UserRequestDTO;
 import br.com.food.dto.UserResponseDTO;
 import br.com.food.enuns.UserType;
 import br.com.food.enuns.UserRole;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -75,6 +76,7 @@ public class User implements Serializable {
     private Estabelecimento estabelecimento;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Pedido> pedidos;
 
     public User(UserRequestDTO requestDTO, Estabelecimento estabelecimento) {

@@ -1,8 +1,13 @@
 package br.com.food.enuns;
 
 public enum UserRole {
-    ADMIN("admin"),
-    USER("user");
+    ADMIN("ADMIN"),
+    USER("USER"),
+
+    SYSTEM("SYSTEM"),
+    CLIENT("CLIENT"),
+    RESPONSABLE("RESPONSABLE"),
+    MOBILLE("MOBILLE");
 
     private String role;
 

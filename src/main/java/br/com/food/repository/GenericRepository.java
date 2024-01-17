@@ -3,6 +3,7 @@ package br.com.food.repository;
 import br.com.food.entity.Estabelecimento;
 import br.com.food.entity.User;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
@@ -89,7 +90,11 @@ public abstract class GenericRepository {
 
         TypedQuery<T> query = this.em.createQuery(criteriaQuery);
 
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     public <T> T getEntityByProperty(
