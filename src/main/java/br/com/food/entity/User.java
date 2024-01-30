@@ -1,13 +1,16 @@
 package br.com.food.entity;
 
+import br.com.food.dto.RegisterDTO;
 import br.com.food.dto.UserRequestDTO;
 import br.com.food.dto.UserResponseDTO;
 import br.com.food.enuns.UserType;
 import br.com.food.enuns.UserRole;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.io.Serial;
@@ -42,13 +45,23 @@ public class User implements Serializable {
     private String password;
 
     @NotBlank
+    @Pattern(regexp = "\\(\\d{2}\\) \\d{5}-\\d{4}", message = "Por favor, forneça um número de telefone válido no formato (XX) XXXXX-XXXX.")
     private String telefone;
+
+    private String pais;
+
+    private String estado;
+
+    private String cidade;
+
+    private String cep;
 
     @NotBlank
     private String endereco;
 
     private String cpf;
 
+    @Email(message = "Por favor, forneça um endereço de e-mail válido.")
     private String email;
 
     @NotNull
@@ -117,4 +130,25 @@ public class User implements Serializable {
     }
 
     public User(String iduser) { this.id = iduser; }
+
+    public User(RegisterDTO data, String encryptedPassword) {
+        this.nome = data.nome();
+        this.sobreNome = data.sobreNome();
+        this.login = data.email();
+        this.password = encryptedPassword;
+        this.telefone = data.telefone();
+        this.pais = "Brasil";
+        this.estado = "Bahia";
+        this.cidade = "Itambé";
+        this.cep = "45140-000";
+        this.endereco = data.endereco();
+        this.email = data.email();
+        this.type = data.type();
+        this.role = UserRole.fromUserType(data.type());
+        this.accountNonExpired = true;
+        this.accountNonLocked = true;
+        this.credentialsNonExpired = true;
+        this.enabled = true;
+        this.estabelecimento = new Estabelecimento(data.idestabelecimento());
+    }
 }

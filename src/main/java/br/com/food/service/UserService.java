@@ -1,10 +1,18 @@
 package br.com.food.service;
 
+import br.com.food.dto.LoginResponseDTO;
+import br.com.food.dto.RegisterDTO;
 import br.com.food.dto.UserRequestDTO;
 import br.com.food.dto.UserResponseDTO;
 import br.com.food.entity.Estabelecimento;
 import br.com.food.entity.User;
+import br.com.food.infra.security.ResourceOwner;
+import br.com.food.infra.security.TokenService;
 import br.com.food.repository.UserRepository;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +22,13 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
+    private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
     private final UserRepository repository;
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, AuthenticationManager authenticationManager, TokenService tokenService) {
         this.repository = repository;
+        this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
     }
 
     public void saveUser(UserRequestDTO requestDTO) {
@@ -24,6 +36,18 @@ public class UserService {
             throw new IllegalArgumentException("data = null ou id do estabelecimento menor que zero");
         }
         this.repository.save(new User(requestDTO, new Estabelecimento(requestDTO.idestabelecimento())));
+    }
+
+    public LoginResponseDTO saveUserRegister(RegisterDTO registerDTO) throws AuthenticationException {
+        registerDTO.validate();
+        if(this.repository.getUserByLogin(registerDTO.email()) != null) {
+            throw new IllegalArgumentException("Usuário já existente");
+        }
+
+        String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.email());
+        User user = new User(registerDTO, encryptedPassword);
+        this.repository.save(user);
+        return this.authenticateUser(user.getLogin(), user.getEmail());
     }
 
     public UserResponseDTO updateUser(UserResponseDTO responseDTO) {
@@ -62,6 +86,13 @@ public class UserService {
         } else {
             throw new IllegalArgumentException("UUID inválido / null ou user não encontrado");
         }
+    }
+
+    public LoginResponseDTO authenticateUser(String login, String password) throws AuthenticationException {
+        var usernamePassword = new UsernamePasswordAuthenticationToken(login, password);
+        var auth = this.authenticationManager.authenticate(usernamePassword);
+        var token = tokenService.generateTokenWithRotationKey((ResourceOwner) auth.getPrincipal());
+        return new LoginResponseDTO(token);
     }
 
     private UserResponseDTO mapUserToResponseDTO(User user) {
