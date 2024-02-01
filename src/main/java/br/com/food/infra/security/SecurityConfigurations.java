@@ -31,7 +31,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers("/empress/**").hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers("/item/**").hasAnyAuthority("ADMIN", "USER", "MOBILLE")
-                        .requestMatchers("/pedido/**").hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers("/pedido/**").hasAnyAuthority("ADMIN", "USER", "MOBILLE")
                         .requestMatchers("/produto/**").hasAnyAuthority("ADMIN", "USER", "MOBILLE")
                         .requestMatchers("/user/**").hasAnyAuthority("ADMIN")
                         .anyRequest().authenticated()

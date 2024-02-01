@@ -1,5 +1,6 @@
 package br.com.food.entity;
 
+import br.com.food.dto.ItemRequestDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +10,8 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "item")
@@ -41,4 +44,11 @@ public class Item implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idpedido")
     private Pedido pedido;
+
+
+    public Item(ItemRequestDTO itemRequestDTO) {
+        this.quantidade = itemRequestDTO.quantidade();
+        this.descricao = itemRequestDTO.descricao();
+        this.produto = new Produto(itemRequestDTO.idproduto());
+    }
 }

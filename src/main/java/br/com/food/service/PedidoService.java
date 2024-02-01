@@ -1,5 +1,6 @@
 package br.com.food.service;
 
+import br.com.food.dto.ItemRequestDTO;
 import br.com.food.dto.PedidoRequestDTO;
 import br.com.food.dto.PedidoResponseDTO;
 import br.com.food.entity.Item;
@@ -25,14 +26,14 @@ public class PedidoService {
     private DataFormat dataFormat = new DataFormat();;
 
     public void savePedido(PedidoRequestDTO requestDTO) {
-        if (requestDTO == null || requestDTO.items().isEmpty() || requestDTO.iduser() == null) {
+        if (requestDTO == null || requestDTO.itemRequestDTOS().isEmpty() || requestDTO.iduser() == null) {
             throw new IllegalArgumentException("Objeto null / iduser null ou itens vazio");
         }
-        for (Item item : requestDTO.items()) {
-            System.out.println(item.getDescricao());
-            System.out.println(item.getQuantidade());
+        List<Item> itemList = new ArrayList<>();
+        for (ItemRequestDTO itemRequestDTO : requestDTO.itemRequestDTOS()) {
+            itemList.add(new Item(itemRequestDTO));
         }
-//        this.repository.save(new Pedido(requestDTO, new User(requestDTO.iduser())));
+        this.repository.save(new Pedido(requestDTO, new User(requestDTO.iduser()), itemList));
     }
 
     public void updatePedido(PedidoResponseDTO responseDTO) {

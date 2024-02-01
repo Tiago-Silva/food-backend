@@ -54,24 +54,8 @@ public class Pedido implements Serializable {
     @Column(name = "tipo_pagamento")
     private TipoPagamento tipoPagamento;
 
-    @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "pedido" , fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Item> items;
-
-    public Pedido(PedidoRequestDTO requestDTO, User user) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        this.data = new Date();
-        this.ano = Integer.toString(localDateTime.getYear());
-        this.mes = Integer.toString(localDateTime.getMonthValue());
-        this.dia = Integer.toString(localDateTime.getDayOfMonth());
-        this.hora = Integer.toString(localDateTime.getHour());
-        this.total = requestDTO.total();
-        this.user = user;
-        this.tipoPagamento = requestDTO.tipoPagamento();
-        this.items = requestDTO.items();
-        for (Item item : this.items) {
-            item.setPedido(this);
-        }
-    }
 
     public Pedido(PedidoResponseDTO responseDTO, User user) {
         this.idpedido = responseDTO.idpedido();
@@ -84,6 +68,22 @@ public class Pedido implements Serializable {
         this.user = user;
         this.tipoPagamento = responseDTO.tipoPagamento();
         this.items = responseDTO.items();
+        for (Item item : this.items) {
+            item.setPedido(this);
+        }
+    }
+
+    public Pedido(PedidoRequestDTO requestDTO, User user, List<Item> itemList) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        this.data = new Date();
+        this.ano = Integer.toString(localDateTime.getYear());
+        this.mes = Integer.toString(localDateTime.getMonthValue());
+        this.dia = Integer.toString(localDateTime.getDayOfMonth());
+        this.hora = Integer.toString(localDateTime.getHour());
+        this.total = requestDTO.total();
+        this.user = user;
+        this.tipoPagamento = requestDTO.tipoPagamento();
+        this.items = itemList;
         for (Item item : this.items) {
             item.setPedido(this);
         }

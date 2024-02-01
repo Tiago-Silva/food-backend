@@ -64,6 +64,8 @@ public class TokenService {
                     .withIssuer("food-api")
                     .withSubject(user.getUsername())
                     .withExpiresAt(genExpirationDate())
+                    .withClaim("idUser", user.getId())
+                    .withClaim("idestabelecimento", user.getUsuario().getEstabelecimento().getIdestabelecimento())
                     .withClaim("roles", user.getAuthorities().stream()
                             .map(authority -> "ROLE_" + authority.getAuthority())
                             .collect(Collectors.toList()))

@@ -81,4 +81,8 @@ public class Produto {
         this.enablePromotions = responseDTO.enablePromotions();
         this.estabelecimento = estabelecimento;
     }
+
+    public Produto(int idproduto) {
+        this.idproduto = idproduto;
+    }
 }
