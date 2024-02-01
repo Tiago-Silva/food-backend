@@ -9,12 +9,22 @@ import br.com.food.entity.User;
 import br.com.food.infra.security.ResourceOwner;
 import br.com.food.infra.security.TokenService;
 import br.com.food.repository.UserRepository;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +32,9 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
+    @Value("${google.client.id}")
+    private String googleClientId;
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final UserRepository repository;
@@ -39,15 +52,34 @@ public class UserService {
     }
 
     public LoginResponseDTO saveUserRegister(RegisterDTO registerDTO) throws AuthenticationException {
-        registerDTO.validate();
-        if(this.repository.getUserByLogin(registerDTO.email()) != null) {
-            throw new IllegalArgumentException("Usuário já existente");
-        }
+        try {
+            HttpTransport transport = new NetHttpTransport();
+            JsonFactory jsonFactory = new JacksonFactory();
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
 
-        String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.email());
-        User user = new User(registerDTO, encryptedPassword);
-        this.repository.save(user);
-        return this.authenticateUser(user.getLogin(), user.getEmail());
+            GoogleIdToken idToken = verifier.verify(registerDTO.googleAccessToken());
+            if (idToken != null) {
+                registerDTO.validate();
+                User user = this.repository.getUserByLogin(registerDTO.email());
+                String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.email());
+
+                if(user != null) {
+                    user = new User(user.getId(), registerDTO, encryptedPassword);
+                    this.repository.update(user);
+                } else {
+                    user = new User(registerDTO, encryptedPassword);
+                    this.repository.save(user);
+                }
+
+                return this.authenticateUser(user.getLogin(), user.getEmail());
+            } else {
+                throw new IllegalArgumentException("Token google inválido");
+            }
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Falha ao verificar usuário google");
+        }
     }
 
     public UserResponseDTO updateUser(UserResponseDTO responseDTO) {

@@ -151,4 +151,26 @@ public class User implements Serializable {
         this.enabled = true;
         this.estabelecimento = new Estabelecimento(data.idestabelecimento());
     }
+
+    public User(String id, RegisterDTO data, String encryptedPassword) {
+        this.id = id;
+        this.nome = data.nome();
+        this.sobreNome = data.sobreNome();
+        this.login = data.email();
+        this.password = encryptedPassword;
+        this.telefone = data.telefone();
+        this.pais = "Brasil";
+        this.estado = "Bahia";
+        this.cidade = "Itambé";
+        this.cep = "45140-000";
+        this.endereco = data.endereco();
+        this.email = data.email();
+        this.type = data.type();
+        this.role = UserRole.fromUserType(data.type());
+        this.accountNonExpired = true;
+        this.accountNonLocked = true;
+        this.credentialsNonExpired = true;
+        this.enabled = true;
+        this.estabelecimento = new Estabelecimento(data.idestabelecimento());
+    }
 }

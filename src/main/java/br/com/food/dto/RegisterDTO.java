@@ -11,7 +11,8 @@ public record RegisterDTO (
     String telefone,
     String endereco,
     UserType type,
-    int idestabelecimento
+    int idestabelecimento,
+    String googleAccessToken
 ) {
     public void validate() {
         Objects.requireNonNull(idestabelecimento, "idestabelecimento é obrigatório e não pode ser nulo");
