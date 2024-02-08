@@ -2,6 +2,7 @@ package br.com.food.controller;
 
 import br.com.food.dto.AuthenticationDTO;
 import br.com.food.dto.LoginResponseDTO;
+import br.com.food.dto.LoginResponseMobilleDTO;
 import br.com.food.dto.RegisterDTO;
 import br.com.food.service.UserService;
 import jakarta.validation.Valid;
@@ -44,7 +45,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<LoginResponseDTO> register(@RequestBody @Valid RegisterDTO data) {
+    public ResponseEntity<LoginResponseMobilleDTO> register(@RequestBody @Valid RegisterDTO data) {
         try {
             return ResponseEntity.ok(this.userService.saveUserRegister(data));
         } catch (BadCredentialsException ex) {
@@ -59,5 +60,23 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping(value = "/refresh-token")
+    public ResponseEntity<LoginResponseMobilleDTO> refreshToken(@RequestBody String refreshToken) {
+        try {
+            return ResponseEntity.ok(this.userService.refreshToken(refreshToken));
+        } catch (BadCredentialsException ex) {
+            logger.error("BadCredentialsException, significa que a senha está incorreta: {}", ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (UsernameNotFoundException ex) {
+            logger.error("UsernameNotFoundException, significa que o usuário não foi encontrado: {}", ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (AuthenticationException ex) {
+            // Lidar com outras exceções de autenticação conforme necessário
+            logger.error("Erro durante a autenticação: {}", ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }
 

@@ -75,4 +75,27 @@ public class TokenService {
             throw new RuntimeException("Error while generating token with rotation key", exception);
         }
     }
+
+    public String generateRefreshToken(ResourceOwner user) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(rotationSecret);
+            String token = JWT.create()
+                    .withIssuer("food-api")
+                    .withSubject(user.getUsername())
+                    .withExpiresAt(genRefreshTokenExpirationDate())
+                    .withClaim("idUser", user.getId())
+                    .withClaim("idestabelecimento", user.getUsuario().getEstabelecimento().getIdestabelecimento())
+                    .withClaim("roles", user.getAuthorities().stream()
+                            .map(authority -> "ROLE_" + authority.getAuthority())
+                            .collect(Collectors.toList()))
+                    .sign(algorithm);
+            return token;
+        } catch (JWTCreationException exception) {
+            throw new RuntimeException("Error while generating refresh token", exception);
+        }
+    }
+
+    private Instant genRefreshTokenExpirationDate() {
+        return LocalDateTime.now().plusDays(365).toInstant(ZoneOffset.of("-03:00"));
+    }
 }

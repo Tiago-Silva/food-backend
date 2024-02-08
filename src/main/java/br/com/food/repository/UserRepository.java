@@ -46,4 +46,8 @@ public class UserRepository extends GenericRepository {
                 idestabelecimento,
                 "nome");
     }
+
+    public User getUserByRefreshToken(String refreshToken) {
+        return super.getEntityByProperty(User.class,"refreshToken",refreshToken);
+    }
 }
