@@ -10,10 +10,9 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "http://192.168.1.100:8081") // ou especifique as origens permitidas
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("*")
-                .exposedHeaders("header1", "header2")
+                .allowedOriginPatterns("*") // permite requisições de qualquer origem
+                .allowedMethods("*") // permite qualquer método (GET, POST, PUT, etc.)
+                .allowedHeaders("*") // permite qualquer header
                 .allowCredentials(true)
                 .maxAge(3600); // tempo de vida do CORS preflight
     }
