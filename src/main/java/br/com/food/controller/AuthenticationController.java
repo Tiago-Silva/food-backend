@@ -5,6 +5,7 @@ import br.com.food.dto.LoginResponseDTO;
 import br.com.food.dto.LoginResponseMobilleDTO;
 import br.com.food.dto.RegisterDTO;
 import br.com.food.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,36 +46,48 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<LoginResponseMobilleDTO> register(@RequestBody @Valid RegisterDTO data) {
-        try {
-            return ResponseEntity.ok(this.userService.saveUserRegister(data));
-        } catch (BadCredentialsException ex) {
-            logger.error("BadCredentialsException, significa que a senha está incorreta: {}", ex.getMessage(), ex);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (UsernameNotFoundException ex) {
-            logger.error("UsernameNotFoundException, significa que o usuário não foi encontrado: {}", ex.getMessage(), ex);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (AuthenticationException ex) {
-            // Lidar com outras exceções de autenticação conforme necessário
-            logger.error("Erro durante a autenticação: {}", ex.getMessage(), ex);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    public ResponseEntity<LoginResponseMobilleDTO> register(@RequestBody @Valid RegisterDTO data, HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        if (userAgent != null && userAgent.equals("MOBILLE")) {
+            try {
+                return ResponseEntity.ok(this.userService.saveUserRegister(data));
+            } catch (BadCredentialsException ex) {
+                logger.error("BadCredentialsException, significa que a senha está incorreta: {}", ex.getMessage(), ex);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            } catch (UsernameNotFoundException ex) {
+                logger.error("UsernameNotFoundException, significa que o usuário não foi encontrado: {}", ex.getMessage(), ex);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            } catch (AuthenticationException ex) {
+                // Lidar com outras exceções de autenticação conforme necessário
+                logger.error("Erro durante a autenticação: {}", ex.getMessage(), ex);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+
     }
 
     @PostMapping(value = "/refresh-token")
-    public ResponseEntity<LoginResponseMobilleDTO> refreshToken(@RequestBody String refreshToken) {
-        try {
-            return ResponseEntity.ok(this.userService.refreshToken(refreshToken));
-        } catch (BadCredentialsException ex) {
-            logger.error("BadCredentialsException, significa que a senha está incorreta: {}", ex.getMessage(), ex);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (UsernameNotFoundException ex) {
-            logger.error("UsernameNotFoundException, significa que o usuário não foi encontrado: {}", ex.getMessage(), ex);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (AuthenticationException ex) {
-            // Lidar com outras exceções de autenticação conforme necessário
-            logger.error("Erro durante a autenticação: {}", ex.getMessage(), ex);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    public ResponseEntity<LoginResponseMobilleDTO> refreshToken(@RequestBody String refreshToken, HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        if (userAgent != null && userAgent.equals("MOBILLE")) {
+            try {
+                return ResponseEntity.ok(this.userService.refreshToken(refreshToken));
+            } catch (BadCredentialsException ex) {
+                logger.error("BadCredentialsException, significa que a senha está incorreta: {}", ex.getMessage(), ex);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            } catch (UsernameNotFoundException ex) {
+                logger.error("UsernameNotFoundException, significa que o usuário não foi encontrado: {}", ex.getMessage(), ex);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            } catch (AuthenticationException ex) {
+                // Lidar com outras exceções de autenticação conforme necessário
+                logger.error("Erro durante a autenticação: {}", ex.getMessage(), ex);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        } else {
+            logger.info("A requisição não veio do MOBILLE, mas sim de: {}", userAgent);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 

@@ -3,6 +3,7 @@ package br.com.food.service;
 import br.com.food.dto.*;
 import br.com.food.entity.Estabelecimento;
 import br.com.food.entity.User;
+import br.com.food.enuns.UserRole;
 import br.com.food.infra.security.ResourceOwner;
 import br.com.food.infra.security.TokenService;
 import br.com.food.repository.UserRepository;
@@ -163,9 +164,8 @@ public class UserService {
 
         User user = this.repository.getUserByRefreshToken(refreshToken);
 
-        if (user != null) {
-            String encryptedPassword = new BCryptPasswordEncoder().encode(user.getEmail());
-            return this.authenticateUserMobille(user.getLogin(), encryptedPassword);
+        if (user != null && user.getRole().equals(UserRole.MOBILLE)) {
+            return this.authenticateUserMobille(user.getLogin(), user.getEmail());
         } else {
             throw new IllegalArgumentException("RefreshToken inválido");
         }
