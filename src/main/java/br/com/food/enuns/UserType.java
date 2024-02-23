@@ -6,5 +6,7 @@ public enum UserType {
     ADMIN,
     CLIENT,
     RESPONSABLE,
-    MOBILLE
+    MOBILLE,
+    CONSUMIDOR_FINAL
+
 }

@@ -19,6 +19,10 @@ public class UserRepository extends GenericRepository {
         return Optional.ofNullable(user);
     }
 
+    public User getConsumidorFinal() {
+        return super.getEntityByProperty(User.class, "nome", "Consumidor Final");
+    }
+
     public User getUserById(String id) {
         return super.getEntityById(User.class, id);
     }

@@ -7,7 +7,8 @@ public enum UserRole {
     SYSTEM("SYSTEM"),
     CLIENT("CLIENT"),
     RESPONSABLE("RESPONSABLE"),
-    MOBILLE("MOBILLE");
+    MOBILLE("MOBILLE"),
+    CONSUMIDOR_FINAL("Consumidor Final");
 
     private String role;
 
@@ -33,6 +34,8 @@ public enum UserRole {
                 return RESPONSABLE;
             case MOBILLE:
                 return MOBILLE;
+            case CONSUMIDOR_FINAL:
+                return CONSUMIDOR_FINAL;
             default:
                 throw new IllegalArgumentException("Tipo de usuário desconhecido: " + userType);
         }

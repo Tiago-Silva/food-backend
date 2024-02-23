@@ -171,6 +171,10 @@ public class UserService {
         }
     }
 
+    public UserResponseDTO getConsumidorFinal() {
+        return this.mapUserToResponseDTO(this.repository.getConsumidorFinal());
+    }
+
     private UserResponseDTO mapUserToResponseDTO(User user) {
         return new UserResponseDTO(
                 user.getId(),

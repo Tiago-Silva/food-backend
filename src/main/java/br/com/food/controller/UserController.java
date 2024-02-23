@@ -49,4 +49,9 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getUsersById(@PathVariable("iduser") String iduser) {
         return new ResponseEntity<>(this.service.getUserById(iduser),HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/getConsumidorFinal", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserResponseDTO> getConsumidorFinal() {
+        return new ResponseEntity<>(this.service.getConsumidorFinal(),HttpStatus.OK);
+    }
 }
