@@ -35,6 +35,7 @@ public class SecurityConfigurations {
                         .requestMatchers("/pedido/**").hasAnyAuthority("ADMIN", "USER", "MOBILLE")
                         .requestMatchers("/produto/**").hasAnyAuthority("ADMIN", "USER", "MOBILLE")
                         .requestMatchers(HttpMethod.GET, "/user/getConsumidorFinal").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/user/getUsers/{idestabelecimento}/{type}").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers("/user/**").hasAnyAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
