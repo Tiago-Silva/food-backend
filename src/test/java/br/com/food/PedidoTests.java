@@ -7,6 +7,7 @@ import br.com.food.dto.UserRequestDTO;
 import br.com.food.entity.Item;
 import br.com.food.entity.Produto;
 import br.com.food.entity.User;
+import br.com.food.enuns.PedidoStatus;
 import br.com.food.enuns.TipoPagamento;
 import br.com.food.enuns.UserRole;
 import br.com.food.enuns.UserType;
@@ -122,6 +123,7 @@ public class PedidoTests {
                         null,
                         null,
                         TipoPagamento.DINHEIRO,
+                        PedidoStatus.FINALIZADO,
                         null
                 ))
                 .exchange()
@@ -211,6 +213,7 @@ public class PedidoTests {
                 user.getNome(),
                 user.getId(),
                 TipoPagamento.PIX,
+                PedidoStatus.FINALIZADO,
                 itemList
         );
         webTestClient

@@ -1,11 +1,10 @@
 package br.com.food.service;
 
-import br.com.food.dto.ItemRequestDTO;
-import br.com.food.dto.PedidoRequestDTO;
-import br.com.food.dto.PedidoResponseDTO;
+import br.com.food.dto.*;
 import br.com.food.entity.Item;
 import br.com.food.entity.Pedido;
 import br.com.food.entity.User;
+import br.com.food.enuns.PedidoStatus;
 import br.com.food.regras.DataFormat;
 import br.com.food.repository.PedidoRepository;
 import org.springframework.data.domain.Page;
@@ -13,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,6 +74,17 @@ public class PedidoService {
         }
         return this.repository.getPedidoByUserAndByPaymentType(iduser, paymentType)
                 .stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
+    }
+
+    public PedidoPendenteReponseDTO getPedidoPendenteByIdUser(String iduser) {
+        if (iduser == null) {
+            throw new IllegalArgumentException("iduser inválido");
+        }
+        List<Pedido> pedidos = this.repository.getPedidoPendenteByIdUser(iduser, PedidoStatus.PENDENTE.toString());
+        if (pedidos.isEmpty()) {
+            return null;
+        }
+        return this.mapPedidoToResponseDTOWithItems(pedidos.get(0));
     }
 
     public Page<PedidoResponseDTO> getPedidoById(Long idpedido) {
@@ -189,7 +200,37 @@ public class PedidoService {
                 pedido.getUser().getNome(),
                 pedido.getUser().getId(),
                 pedido.getTipoPagamento(),
+                pedido.getStatus(),
                 new ArrayList<>()
+        );
+    }
+
+    public PedidoPendenteReponseDTO mapPedidoToResponseDTOWithItems(Pedido pedido) {
+        return new PedidoPendenteReponseDTO(
+                pedido.getIdpedido(),
+                pedido.getData(),
+                pedido.getAno(),
+                pedido.getMes(),
+                pedido.getDia(),
+                pedido.getHora(),
+                pedido.getTotal(),
+                pedido.getUser().getNome(),
+                pedido.getUser().getId(),
+                pedido.getTipoPagamento(),
+                pedido.getStatus(),
+                pedido.getItems().stream().map(this::mapItemToResponseDTO).collect(Collectors.toList())
+        );
+    }
+
+    public ItemResponseDTO mapItemToResponseDTO(Item item) {
+        return new ItemResponseDTO(
+                item.getIditem(),
+                item.getQuantidade(),
+                item.getDescricao(),
+                item.getProduto().getValor(),
+                item.getProduto().getValor().multiply(BigDecimal.valueOf(item.getQuantidade())),
+                item.getProduto().getIdproduto(),
+                item.getPedido().getIdpedido()
         );
     }
 }

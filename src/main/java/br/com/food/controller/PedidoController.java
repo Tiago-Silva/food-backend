@@ -1,5 +1,6 @@
 package br.com.food.controller;
 
+import br.com.food.dto.PedidoPendenteReponseDTO;
 import br.com.food.dto.PedidoRequestDTO;
 import br.com.food.dto.PedidoResponseDTO;
 import br.com.food.service.PedidoService;
@@ -95,6 +96,11 @@ public class PedidoController {
     @GetMapping("/getById")
     public ResponseEntity<Page<PedidoResponseDTO>> getPedidoById(@RequestHeader("idpedido") Long idpedido) {
         return new ResponseEntity<>(this.service.getPedidoById(idpedido), HttpStatus.OK);
+    }
+
+    @GetMapping("/getPendenteByIdUser/{iduser}")
+    public ResponseEntity<PedidoPendenteReponseDTO> getPedidoPendenteByIdUser(@PathVariable("iduser") String iduser) {
+        return new ResponseEntity<>(this.service.getPedidoPendenteByIdUser(iduser), HttpStatus.OK);
     }
 
     @GetMapping("/getPedidoByEstablishmentWithDatePagination")

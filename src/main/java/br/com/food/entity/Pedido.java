@@ -2,6 +2,7 @@ package br.com.food.entity;
 
 import br.com.food.dto.PedidoRequestDTO;
 import br.com.food.dto.PedidoResponseDTO;
+import br.com.food.enuns.PedidoStatus;
 import br.com.food.enuns.TipoPagamento;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -54,6 +55,11 @@ public class Pedido implements Serializable {
     @Column(name = "tipo_pagamento")
     private TipoPagamento tipoPagamento;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private PedidoStatus status;
+
     @OneToMany(mappedBy = "pedido" , fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Item> items;
 
@@ -67,6 +73,7 @@ public class Pedido implements Serializable {
         this.total = responseDTO.total();
         this.user = user;
         this.tipoPagamento = responseDTO.tipoPagamento();
+        this.status = responseDTO.status();
         this.items = responseDTO.items();
         for (Item item : this.items) {
             item.setPedido(this);
@@ -83,6 +90,7 @@ public class Pedido implements Serializable {
         this.total = requestDTO.total();
         this.user = user;
         this.tipoPagamento = requestDTO.tipoPagamento();
+        this.status = requestDTO.status();
         this.items = itemList;
         for (Item item : this.items) {
             item.setPedido(this);

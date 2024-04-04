@@ -1,7 +1,5 @@
 package br.com.food.dto;
 
-
-import br.com.food.entity.Item;
 import br.com.food.enuns.PedidoStatus;
 import br.com.food.enuns.TipoPagamento;
 
@@ -9,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-public record PedidoResponseDTO(
+public record PedidoPendenteReponseDTO(
         Long idpedido,
         Date data,
         String ano,
@@ -21,5 +19,6 @@ public record PedidoResponseDTO(
         String iduser,
         TipoPagamento tipoPagamento,
         PedidoStatus status,
-        List<Item> items
-) { }
+        List<ItemResponseDTO> items
+) {
+}

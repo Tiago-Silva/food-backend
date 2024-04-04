@@ -1,6 +1,7 @@
 package br.com.food.repository;
 
 import br.com.food.entity.Pedido;
+import br.com.food.enuns.PedidoStatus;
 import br.com.food.enuns.TipoPagamento;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
@@ -97,6 +98,18 @@ public class PedidoRepository extends GenericRepository {
                 "ano",
                 "tipoPagamento",
                 TipoPagamento.valueOf(paymentType)
+        );
+    }
+
+    public List<Pedido> getPedidoPendenteByIdUser(String iduser, String status) {
+        return super.getEntitiesByForeignKeyAndWithConditional(
+                Pedido.class,
+                "user",
+                "id",
+                iduser,
+                "ano",
+                "status",
+                PedidoStatus.valueOf(status)
         );
     }
 
