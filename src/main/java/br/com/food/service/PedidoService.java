@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,11 @@ import java.util.stream.Collectors;
 public class PedidoService {
 
     private final PedidoRepository repository;
-    public PedidoService(PedidoRepository repository) { this.repository = repository; }
+    private final ItemService itemService;
+    public PedidoService(PedidoRepository repository, ItemService itemService) {
+        this.repository = repository;
+        this.itemService = itemService;
+    }
 
     private DataFormat dataFormat = new DataFormat();;
 
@@ -38,10 +43,41 @@ public class PedidoService {
 
     public void updatePedido(PedidoResponseDTO responseDTO) {
         if (responseDTO == null || responseDTO.idpedido() <= 0
-                || responseDTO.items().isEmpty() || responseDTO.iduser() == null) {
+                || responseDTO.itemsReponseDTO().isEmpty() || responseDTO.iduser() == null) {
             throw new IllegalArgumentException("Objeto null / iuser ou idpedido null ou itens vazio");
         }
-        this.repository.update(new Pedido(responseDTO, new User(responseDTO.iduser())));
+        this.repository.update(
+            new Pedido(
+                responseDTO,
+                new User(responseDTO.iduser()),
+                    responseDTO.itemsReponseDTO().stream().map(
+                        itemResponseDTO -> itemService.mapItemResponseDTOTOItem(
+                            itemResponseDTO,
+                            responseDTO.idpedido()
+                        )
+                    ).collect(Collectors.toList())
+            )
+        );
+    }
+
+    public void saveOrUpdate(PedidoResponseDTO responseDTO) {
+        if (responseDTO.idpedido() != null && responseDTO.idpedido() > 0) {
+            this.repository.update(
+                new Pedido(
+                    responseDTO,
+                    new User(responseDTO.iduser()),
+                        responseDTO.itemsReponseDTO().stream().map(
+                            itemResponseDTO -> itemService.mapItemResponseDTOTOItem(
+                                itemResponseDTO,
+                                responseDTO.idpedido()
+                            )
+                        ).collect(Collectors.toList()),
+                    new Date()
+                )
+            );
+        } else {
+            this.savePedido(this.mapPedidoResponseDTOToRequestDTO(responseDTO));
+        }
     }
 
     public List<PedidoResponseDTO> getAllPedidoByIdEstablishment(int idestabelecimento) {
@@ -205,7 +241,7 @@ public class PedidoService {
         );
     }
 
-    public PedidoPendenteReponseDTO mapPedidoToResponseDTOWithItems(Pedido pedido) {
+    private PedidoPendenteReponseDTO mapPedidoToResponseDTOWithItems(Pedido pedido) {
         return new PedidoPendenteReponseDTO(
                 pedido.getIdpedido(),
                 pedido.getData(),
@@ -222,7 +258,7 @@ public class PedidoService {
         );
     }
 
-    public ItemResponseDTO mapItemToResponseDTO(Item item) {
+    private ItemResponseDTO mapItemToResponseDTO(Item item) {
         return new ItemResponseDTO(
                 item.getIditem(),
                 item.getQuantidade(),
@@ -231,6 +267,25 @@ public class PedidoService {
                 item.getProduto().getValor().multiply(BigDecimal.valueOf(item.getQuantidade())),
                 item.getProduto().getIdproduto(),
                 item.getPedido().getIdpedido()
+        );
+    }
+
+    private PedidoRequestDTO mapPedidoResponseDTOToRequestDTO (PedidoResponseDTO responseDTO) {
+        return new PedidoRequestDTO(
+                responseDTO.total(),
+                responseDTO.iduser(),
+                responseDTO.tipoPagamento(),
+                responseDTO.status(),
+                responseDTO.itemsReponseDTO().stream().map(this::mapItemResponseDTOToRequestDTO).collect(Collectors.toList())
+        );
+    }
+
+    private ItemRequestDTO mapItemResponseDTOToRequestDTO (ItemResponseDTO item) {
+        return new ItemRequestDTO(
+                item.quantidade(),
+                item.descricao(),
+                item.idproduto(),
+                item.idpedido()
         );
     }
 }

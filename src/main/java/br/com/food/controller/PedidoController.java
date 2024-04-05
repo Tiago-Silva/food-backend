@@ -32,6 +32,12 @@ public class PedidoController {
         return new ResponseEntity<>(HttpStatus.CREATED,HttpStatus.OK);
     }
 
+    @PostMapping("/saveOrUpdate")
+    public ResponseEntity<HttpStatus> saveOrUpdate(@RequestBody PedidoResponseDTO responseDTO) {
+        this.service.saveOrUpdate(responseDTO);
+        return new ResponseEntity<>(HttpStatus.CREATED,HttpStatus.OK);
+    }
+
     @GetMapping("/getPedidosByIdEstablishment")
     public ResponseEntity<List<PedidoResponseDTO>> getAllPedidoByIdEstablishment(@RequestHeader("idestabelecimento")
                                                                                  int idestabelecimento) {

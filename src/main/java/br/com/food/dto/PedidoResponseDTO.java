@@ -21,5 +21,5 @@ public record PedidoResponseDTO(
         String iduser,
         TipoPagamento tipoPagamento,
         PedidoStatus status,
-        List<Item> items
+        List<ItemResponseDTO> itemsReponseDTO
 ) { }

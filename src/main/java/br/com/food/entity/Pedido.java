@@ -13,6 +13,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class Pedido implements Serializable {
     @OneToMany(mappedBy = "pedido" , fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Item> items;
 
-    public Pedido(PedidoResponseDTO responseDTO, User user) {
+    public Pedido(PedidoResponseDTO responseDTO, User user, List<Item> itemsList) {
         this.idpedido = responseDTO.idpedido();
         this.data = responseDTO.data();
         this.ano = responseDTO.ano();
@@ -74,7 +75,7 @@ public class Pedido implements Serializable {
         this.user = user;
         this.tipoPagamento = responseDTO.tipoPagamento();
         this.status = responseDTO.status();
-        this.items = responseDTO.items();
+        this.items = itemsList;
         for (Item item : this.items) {
             item.setPedido(this);
         }
@@ -82,11 +83,12 @@ public class Pedido implements Serializable {
 
     public Pedido(PedidoRequestDTO requestDTO, User user, List<Item> itemList) {
         LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         this.data = new Date();
         this.ano = Integer.toString(localDateTime.getYear());
         this.mes = Integer.toString(localDateTime.getMonthValue());
         this.dia = Integer.toString(localDateTime.getDayOfMonth());
-        this.hora = Integer.toString(localDateTime.getHour());
+        this.hora = localDateTime.format(formatter);
         this.total = requestDTO.total();
         this.user = user;
         this.tipoPagamento = requestDTO.tipoPagamento();
@@ -95,5 +97,28 @@ public class Pedido implements Serializable {
         for (Item item : this.items) {
             item.setPedido(this);
         }
+    }
+
+    public Pedido(PedidoResponseDTO responseDTO, User user, List<Item> items, Date data) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        this.idpedido = responseDTO.idpedido();
+        this.data = data;
+        this.ano = Integer.toString(localDateTime.getYear());
+        this.mes = Integer.toString(localDateTime.getMonthValue());
+        this.dia = Integer.toString(localDateTime.getDayOfMonth());
+        this.hora = localDateTime.format(formatter);
+        this.total = responseDTO.total();
+        this.user = user;
+        this.tipoPagamento = responseDTO.tipoPagamento();
+        this.status = responseDTO.status();
+        this.items = items;
+        for (Item item : this.items) {
+            item.setPedido(this);
+        }
+    }
+
+    public Pedido(Long idpedido) {
+        this.idpedido = idpedido;
     }
 }

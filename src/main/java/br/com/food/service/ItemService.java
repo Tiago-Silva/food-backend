@@ -2,6 +2,8 @@ package br.com.food.service;
 
 import br.com.food.dto.ItemResponseDTO;
 import br.com.food.entity.Item;
+import br.com.food.entity.Pedido;
+import br.com.food.entity.Produto;
 import br.com.food.repository.ItemRepository;
 import org.springframework.stereotype.Service;
 
@@ -34,5 +36,15 @@ public class ItemService {
                 item.getProduto().getIdproduto(),
                 item.getPedido().getIdpedido()
         );
+    }
+
+    public Item mapItemResponseDTOTOItem(ItemResponseDTO itemResponseDTO, Long idpedido) {
+        if (itemResponseDTO.iditem() == null || itemResponseDTO.iditem() <= 0) {
+            Item item = new Item(itemResponseDTO, new Produto(itemResponseDTO.idproduto()), new Pedido(idpedido));
+            this.repository.save(item);
+
+            return item;
+        }
+        return new Item(itemResponseDTO);
     }
 }

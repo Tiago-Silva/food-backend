@@ -19,6 +19,6 @@ public record PedidoPendenteReponseDTO(
         String iduser,
         TipoPagamento tipoPagamento,
         PedidoStatus status,
-        List<ItemResponseDTO> items
+        List<ItemResponseDTO> itemsReponseDTO
 ) {
 }

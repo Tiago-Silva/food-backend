@@ -1,6 +1,7 @@
 package br.com.food.entity;
 
 import br.com.food.dto.ItemRequestDTO;
+import br.com.food.dto.ItemResponseDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -50,5 +51,20 @@ public class Item implements Serializable {
         this.quantidade = itemRequestDTO.quantidade();
         this.descricao = itemRequestDTO.descricao();
         this.produto = new Produto(itemRequestDTO.idproduto());
+    }
+
+    public Item(ItemResponseDTO itemResponseDTO) {
+        this.iditem = itemResponseDTO.iditem();
+        this.quantidade = itemResponseDTO.quantidade();
+        this.descricao = itemResponseDTO.descricao();
+        this.produto = new Produto(itemResponseDTO.idproduto());
+    }
+
+    public Item(ItemResponseDTO itemResponseDTO, Produto produto, Pedido pedido) {
+        this.iditem = itemResponseDTO.iditem();
+        this.quantidade = itemResponseDTO.quantidade();
+        this.descricao = itemResponseDTO.descricao();
+        this.produto = produto;
+        this.pedido = pedido;
     }
 }
