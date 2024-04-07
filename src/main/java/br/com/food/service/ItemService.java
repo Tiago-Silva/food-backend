@@ -38,6 +38,48 @@ public class ItemService {
         );
     }
 
+    public void deleteItemsToPedido(Long idpedido) {
+        if (idpedido <= 0) {
+            throw new IllegalArgumentException("idpedido inválido ou null");
+        }
+
+        List<Item> items = this.repository.getItemByIdPedido(idpedido);
+
+        if (!items.isEmpty()) {
+            for (Item item : items) {
+                this.repository.delete(item);
+            }
+        }
+    }
+
+    public void updateItemsToPedido(Long idpedido, List<ItemResponseDTO> itemsResponseDTO) {
+        if (idpedido <= 0) {
+            throw new IllegalArgumentException("idpedido inválido ou null");
+        }
+        Pedido pedido = new Pedido(idpedido);
+        List<Item> itemsToUser = itemsResponseDTO.stream()
+            .map(i -> this.mapItemResponseDTOTOItem(i, pedido))
+            .collect(Collectors.toList());
+
+        List<Item> itemsBD = this.repository.getItemByIdPedido(idpedido);
+
+        itemsBD.removeIf(item -> itemsToUser.contains(item));
+        itemsBD.forEach(this.repository::delete);
+
+//        List<Item> itemsToUpdate = itemsToUser.stream()
+//            .filter(item -> {
+//                return item != null;
+//            })
+//            .collect(Collectors.toList());
+//
+//        itemsToUpdate.forEach(this.repository::update);
+        for (Item item : itemsToUser) {
+            if (item != null) {
+                this.repository.update(item);
+            }
+        }
+    }
+
     public Item mapItemResponseDTOTOItem(ItemResponseDTO itemResponseDTO, Long idpedido) {
         if (itemResponseDTO.iditem() == null || itemResponseDTO.iditem() <= 0) {
             Item item = new Item(itemResponseDTO, new Produto(itemResponseDTO.idproduto()), new Pedido(idpedido));
@@ -46,5 +88,15 @@ public class ItemService {
             return item;
         }
         return new Item(itemResponseDTO);
+    }
+
+    public Item mapItemResponseDTOTOItem(ItemResponseDTO itemResponseDTO, Pedido pedido) {
+        if (itemResponseDTO.iditem() == null || itemResponseDTO.iditem() <= 0) {
+            Item item = new Item(itemResponseDTO, new Produto(itemResponseDTO.idproduto()), pedido);
+            this.repository.save(item);
+
+            return item;
+        }
+        return new Item(itemResponseDTO, pedido);
     }
 }

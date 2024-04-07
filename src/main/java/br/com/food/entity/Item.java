@@ -67,4 +67,12 @@ public class Item implements Serializable {
         this.produto = produto;
         this.pedido = pedido;
     }
+
+    public Item(ItemResponseDTO itemResponseDTO, Pedido pedido) {
+        this.iditem = itemResponseDTO.iditem();
+        this.quantidade = itemResponseDTO.quantidade();
+        this.descricao = itemResponseDTO.descricao();
+        this.produto = new Produto(itemResponseDTO.idproduto());
+        this.pedido = pedido;
+    }
 }

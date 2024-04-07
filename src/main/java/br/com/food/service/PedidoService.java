@@ -62,19 +62,14 @@ public class PedidoService {
 
     public void saveOrUpdate(PedidoResponseDTO responseDTO) {
         if (responseDTO.idpedido() != null && responseDTO.idpedido() > 0) {
-            this.repository.update(
-                new Pedido(
-                    responseDTO,
-                    new User(responseDTO.iduser()),
-                        responseDTO.itemsReponseDTO().stream().map(
-                            itemResponseDTO -> itemService.mapItemResponseDTOTOItem(
-                                itemResponseDTO,
-                                responseDTO.idpedido()
-                            )
-                        ).collect(Collectors.toList()),
-                    new Date()
-                )
-            );
+            if (responseDTO.itemsReponseDTO().isEmpty()) {
+                this.itemService.deleteItemsToPedido(responseDTO.idpedido());
+                this.repository.delete(new Pedido(responseDTO.idpedido()));
+            } else {
+                Pedido pedido = new Pedido(responseDTO, new User(responseDTO.iduser()));
+                this.repository.update(pedido);
+                this.itemService.updateItemsToPedido(responseDTO.idpedido(), responseDTO.itemsReponseDTO());
+            }
         } else {
             this.savePedido(this.mapPedidoResponseDTOToRequestDTO(responseDTO));
         }

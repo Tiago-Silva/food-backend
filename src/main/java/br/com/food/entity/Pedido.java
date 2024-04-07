@@ -121,4 +121,19 @@ public class Pedido implements Serializable {
     public Pedido(Long idpedido) {
         this.idpedido = idpedido;
     }
+
+    public Pedido(PedidoResponseDTO responseDTO, User user) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        this.idpedido = responseDTO.idpedido();
+        this.data = new Date();
+        this.ano = Integer.toString(localDateTime.getYear());
+        this.mes = Integer.toString(localDateTime.getMonthValue());
+        this.dia = Integer.toString(localDateTime.getDayOfMonth());
+        this.hora = localDateTime.format(formatter);
+        this.total = responseDTO.total();
+        this.user = user;
+        this.tipoPagamento = responseDTO.tipoPagamento();
+        this.status = responseDTO.status();
+    }
 }
