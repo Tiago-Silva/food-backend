@@ -113,6 +113,19 @@ public class PedidoRepository extends GenericRepository {
         );
     }
 
+    public List<Pedido> getPedidosEstablishmentByStatus(int idestabelecimento, String status) {
+        return super.getTwoEntitiesByForeignKeyAndWithConditional(
+                Pedido.class,
+                "user",
+                "estabelecimento",
+                "idestabelecimento",
+                idestabelecimento,
+                "data",
+                "status",
+                PedidoStatus.valueOf(status)
+        );
+    }
+
     public List<Pedido> getPedidoByUserAndByPaymentTypeWhitPagination(
             String iduser,
             String paymentType,

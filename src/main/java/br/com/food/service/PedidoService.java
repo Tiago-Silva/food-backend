@@ -118,6 +118,14 @@ public class PedidoService {
         return this.mapPedidoToResponseDTOWithItems(pedidos.get(0));
     }
 
+    public List<PedidoResponseDTO> getPedidosEstablishmentByStatus(int idestabelecimento, String status) {
+        if (idestabelecimento <= 0 || status == null) {
+            throw new IllegalArgumentException("Argumentos inválidos");
+        }
+        return this.repository.getPedidosEstablishmentByStatus(idestabelecimento, status)
+                .stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
+    }
+
     public Page<PedidoResponseDTO> getPedidoById(Long idpedido) {
         if (idpedido <= 0) {
             throw new IllegalArgumentException("idpedido inválido ou null");

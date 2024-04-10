@@ -109,6 +109,14 @@ public class PedidoController {
         return new ResponseEntity<>(this.service.getPedidoPendenteByIdUser(iduser), HttpStatus.OK);
     }
 
+    @GetMapping("/getEstablishmentByStatus/{idestabelecimento}/{status}")
+    public ResponseEntity<List<PedidoResponseDTO>> getPedidosEstablishmentByStatus(
+            @PathVariable("idestabelecimento") int idestabelecimento,
+            @PathVariable("status") String status
+    ) {
+        return new ResponseEntity<>(this.service.getPedidosEstablishmentByStatus(idestabelecimento, status), HttpStatus.OK);
+    }
+
     @GetMapping("/getPedidoByEstablishmentWithDatePagination")
     public ResponseEntity<Page<PedidoResponseDTO>> getPedidoByEstablishmentWithDatePagination(
             @RequestHeader("idestabelecimento")
