@@ -15,10 +15,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Repository
 @Transactional(readOnly = true)
@@ -687,6 +684,38 @@ public abstract class GenericRepository {
 //        long total = getTotalCount(entityClass, entityName, foreignKeyIdName, foreignKeyId, conditionalName, conditional);
 
 //        return new PageImpl<>(resultList, PageRequest.of(pageNumber - 1, pageSize), total);
+    }
+
+    public <T, E extends Enum<E>> Map<String, Long> getCountByStatusForEstablishment(
+            Class<T> entityClass,
+            String statusFieldName,
+            String firstEntityName,
+            String secondEntityName,
+            String foreignKeyIdName,
+            int foreygnKeyId
+    ) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Object[]> query = builder.createQuery(Object[].class);
+        Root<T> root = query.from(entityClass);
+
+        Expression<Long> count = builder.count(root);
+        Expression<String> status = root.get(statusFieldName).as(String.class);
+
+        // Adiciona a condição para filtrar pelo ID do estabelecimento
+        Predicate establishmentCondition = builder.equal(root.get(firstEntityName).get(secondEntityName).get(foreignKeyIdName), foreygnKeyId);
+
+        query.multiselect(status, count);
+        query.where(establishmentCondition);
+        query.groupBy(status);
+
+        List<Object[]> results = em.createQuery(query).getResultList();
+
+        Map<String, Long> statusCounts = new HashMap<>();
+        for (Object[] result : results) {
+            statusCounts.put((String) result[0], (Long) result[1]);
+        }
+
+        return statusCounts;
     }
 
     public <T, E extends Enum<E>> long getTotalCount(

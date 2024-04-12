@@ -13,9 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -225,6 +223,32 @@ public class PedidoService {
                 PageRequest.of(page.getNumber(), pageSize),
                 page.getTotalElements()
         );
+    }
+
+    public List<PedidoStatusDTO> getCountByStatusForEstablishment(int idestabelecimento) {
+        if (idestabelecimento <= 0) {
+            throw new IllegalArgumentException("argumento inválido ou null");
+        }
+        Map<String, Long> count = this.repository.getCountByStatusForEstablishment(idestabelecimento);
+
+        EnumMap<PedidoStatus, String> statusToBackground = new EnumMap<>(PedidoStatus.class);
+        statusToBackground.put(PedidoStatus.RECEBIDO, "title");
+        statusToBackground.put(PedidoStatus.PREPARAÇÃO, "secondary");
+        statusToBackground.put(PedidoStatus.PRONTO, "secondary_light");
+        statusToBackground.put(PedidoStatus.ENVIADO, "success_light");
+        statusToBackground.put(PedidoStatus.FINALIZADO, "success");
+        statusToBackground.put(PedidoStatus.CANCELADO, "attention");
+        statusToBackground.put(PedidoStatus.ENTREGUE, "primary");
+        statusToBackground.put(PedidoStatus.PENDENTE, "attention_light");
+
+        return Arrays.stream(PedidoStatus.values())
+            .sorted(Comparator.comparingInt(PedidoStatus::getOrder))
+            .map(status -> new PedidoStatusDTO(
+            count.getOrDefault(status.name(), 0L).intValue(),
+            status.name(),
+            statusToBackground.get(status)
+        ))
+        .collect(Collectors.toList());
     }
 
     public PedidoResponseDTO mapPedidoToResponseDTO(Pedido pedido) {

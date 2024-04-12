@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class PedidoRepository extends GenericRepository {
@@ -123,6 +124,17 @@ public class PedidoRepository extends GenericRepository {
                 "data",
                 "status",
                 PedidoStatus.valueOf(status)
+        );
+    }
+
+    public Map<String, Long> getCountByStatusForEstablishment(int idestabelecimento) {
+        return super.getCountByStatusForEstablishment(
+                Pedido.class,
+                "status",
+                "user",
+                "estabelecimento",
+                "idestabelecimento",
+                idestabelecimento
         );
     }
 

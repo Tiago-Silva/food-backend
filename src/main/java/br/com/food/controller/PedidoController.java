@@ -3,6 +3,7 @@ package br.com.food.controller;
 import br.com.food.dto.PedidoPendenteReponseDTO;
 import br.com.food.dto.PedidoRequestDTO;
 import br.com.food.dto.PedidoResponseDTO;
+import br.com.food.dto.PedidoStatusDTO;
 import br.com.food.service.PedidoService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -115,6 +116,11 @@ public class PedidoController {
             @PathVariable("status") String status
     ) {
         return new ResponseEntity<>(this.service.getPedidosEstablishmentByStatus(idestabelecimento, status), HttpStatus.OK);
+    }
+
+    @GetMapping("/getTotalOrdesByStatus/{idestabelecimento}")
+    public ResponseEntity<List<PedidoStatusDTO>> getCountByStatusForEstablishment(@PathVariable("idestabelecimento") int idestabelecimento) {
+        return new ResponseEntity<>(this.service.getCountByStatusForEstablishment(idestabelecimento), HttpStatus.OK);
     }
 
     @GetMapping("/getPedidoByEstablishmentWithDatePagination")
