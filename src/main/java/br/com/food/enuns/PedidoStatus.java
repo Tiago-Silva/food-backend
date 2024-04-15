@@ -1,5 +1,8 @@
 package br.com.food.enuns;
 
+import lombok.Getter;
+
+@Getter
 public enum PedidoStatus {
     PENDENTE(1),
     RECEBIDO(2),
@@ -14,9 +17,5 @@ public enum PedidoStatus {
 
     PedidoStatus(int order) {
         this.order = order;
-    }
-
-    public int getOrder() {
-        return order;
     }
 }
