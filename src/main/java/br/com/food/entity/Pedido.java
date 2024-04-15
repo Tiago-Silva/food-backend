@@ -3,6 +3,7 @@ package br.com.food.entity;
 import br.com.food.dto.PedidoRequestDTO;
 import br.com.food.dto.PedidoResponseDTO;
 import br.com.food.enuns.PedidoStatus;
+import br.com.food.enuns.PedidoType;
 import br.com.food.enuns.TipoPagamento;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -60,6 +61,11 @@ public class Pedido implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private PedidoStatus status;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private PedidoType type;
 
     @OneToMany(mappedBy = "pedido" , fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Item> items;
