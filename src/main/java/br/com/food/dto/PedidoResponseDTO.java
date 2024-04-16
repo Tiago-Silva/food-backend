@@ -3,6 +3,7 @@ package br.com.food.dto;
 
 import br.com.food.entity.Item;
 import br.com.food.enuns.PedidoStatus;
+import br.com.food.enuns.PedidoType;
 import br.com.food.enuns.TipoPagamento;
 
 import java.math.BigDecimal;
@@ -21,5 +22,6 @@ public record PedidoResponseDTO(
         String iduser,
         TipoPagamento tipoPagamento,
         PedidoStatus status,
+        PedidoType type,
         List<ItemResponseDTO> itemsReponseDTO
 ) { }

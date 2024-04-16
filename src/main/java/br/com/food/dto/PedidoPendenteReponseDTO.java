@@ -1,6 +1,7 @@
 package br.com.food.dto;
 
 import br.com.food.enuns.PedidoStatus;
+import br.com.food.enuns.PedidoType;
 import br.com.food.enuns.TipoPagamento;
 
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ public record PedidoPendenteReponseDTO(
         String iduser,
         TipoPagamento tipoPagamento,
         PedidoStatus status,
+        PedidoType type,
         List<ItemResponseDTO> itemsReponseDTO
 ) {
 }

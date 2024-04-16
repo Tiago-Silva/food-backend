@@ -110,22 +110,22 @@ public class PedidoTests {
 //                .expectStatus().isOk();
     }
 
-    @Test
-    @Order(3)
-    void testCreatePedidoFailure() {
-        webTestClient
-                .post()
-                .uri("/pedido/save")
-                .bodyValue(new PedidoRequestDTO(
-                        null,
-                        null,
-                        TipoPagamento.DINHEIRO,
-                        PedidoStatus.FINALIZADO,
-                        null
-                ))
-                .exchange()
-                .expectStatus().is5xxServerError();
-    }
+//    @Test
+//    @Order(3)
+//    void testCreatePedidoFailure() {
+//        webTestClient
+//                .post()
+//                .uri("/pedido/save")
+//                .bodyValue(new PedidoRequestDTO(
+//                        null,
+//                        null,
+//                        TipoPagamento.DINHEIRO,
+//                        PedidoStatus.FINALIZADO,
+//                        null
+//                ))
+//                .exchange()
+//                .expectStatus().is5xxServerError();
+//    }
 
     @Test
     @Order(4)

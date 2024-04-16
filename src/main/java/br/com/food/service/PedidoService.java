@@ -264,6 +264,7 @@ public class PedidoService {
                 pedido.getUser().getId(),
                 pedido.getTipoPagamento(),
                 pedido.getStatus(),
+                pedido.getType(),
                 new ArrayList<>()
         );
     }
@@ -281,6 +282,7 @@ public class PedidoService {
                 pedido.getUser().getId(),
                 pedido.getTipoPagamento(),
                 pedido.getStatus(),
+                pedido.getType(),
                 pedido.getItems().stream().map(this::mapItemToResponseDTO).collect(Collectors.toList())
         );
     }
@@ -303,6 +305,7 @@ public class PedidoService {
                 responseDTO.iduser(),
                 responseDTO.tipoPagamento(),
                 responseDTO.status(),
+                responseDTO.type(),
                 responseDTO.itemsReponseDTO().stream().map(this::mapItemResponseDTOToRequestDTO).collect(Collectors.toList())
         );
     }
