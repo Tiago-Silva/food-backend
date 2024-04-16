@@ -36,7 +36,7 @@ public class PedidoService {
         for (ItemRequestDTO itemRequestDTO : requestDTO.itemRequestDTOS()) {
             itemList.add(new Item(itemRequestDTO));
         }
-        this.repository.save(new Pedido(requestDTO, new User(requestDTO.iduser()), itemList));
+        this.repository.save(new Pedido(requestDTO, PedidoStatus.RECEBIDO, new User(requestDTO.iduser()), itemList));
     }
 
     public void updatePedido(PedidoResponseDTO responseDTO) {
