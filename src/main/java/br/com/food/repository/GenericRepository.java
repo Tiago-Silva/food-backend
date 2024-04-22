@@ -239,6 +239,48 @@ public abstract class GenericRepository {
         return query.getResultList();
     }
 
+    public <T, E extends Enum<E>, F extends Enum<F>> List<T> getTwoEntitiesByForeignKeyAndWithTwoConditional(
+            Class<T> entityClass,
+            String firstEntityName,
+            String secondEntityName,
+            String foreignKeyPropertyName,
+            int foreignKeyId,
+            String orderByPropertyName,
+            String firstConditionalName,
+            E firstConditional,
+            String secondConditionalName,
+            F secondConditional
+    ) {
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
+        Root<T> root = criteriaQuery.from(entityClass);
+        criteriaQuery.select(root);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        ParameterExpression<Integer> exForeignKeyId = builder.parameter(Integer.class, foreignKeyPropertyName);
+        predicates.add(builder.equal(root.get(firstEntityName).get(secondEntityName).get(foreignKeyPropertyName), exForeignKeyId));
+
+        ParameterExpression<Enum> exConditional = builder.parameter(Enum.class, firstConditionalName);
+        predicates.add(builder.equal(root.get(firstConditionalName), exConditional));
+
+        ParameterExpression<Enum> exSecondConditional = builder.parameter(Enum.class, secondConditionalName);
+        predicates.add(builder.equal(root.get(secondConditionalName), exSecondConditional));
+
+        criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+        if (orderByPropertyName != null && !orderByPropertyName.isEmpty()) {
+            criteriaQuery.orderBy(builder.asc(root.get(orderByPropertyName)));
+        }
+
+        TypedQuery<T> query = em.createQuery(criteriaQuery);
+        query.setParameter(foreignKeyPropertyName, foreignKeyId);
+        query.setParameter(exConditional, firstConditional);
+        query.setParameter(exSecondConditional, secondConditional);
+
+        return query.getResultList();
+    }
+
     public <T> List<T> getTwoEntitiesByForeignKey(
             Class<T> entityClass,
             String firstEntityName,
@@ -689,10 +731,12 @@ public abstract class GenericRepository {
     public <T, E extends Enum<E>> Map<String, Long> getCountByStatusForEstablishment(
             Class<T> entityClass,
             String statusFieldName,
+            String conditionalName,
+            E conditional,
             String firstEntityName,
             String secondEntityName,
             String foreignKeyIdName,
-            int foreygnKeyId
+            int foreignKeyId
     ) {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Object[]> query = builder.createQuery(Object[].class);
@@ -701,11 +745,11 @@ public abstract class GenericRepository {
         Expression<Long> count = builder.count(root);
         Expression<String> status = root.get(statusFieldName).as(String.class);
 
-        // Adiciona a condição para filtrar pelo ID do estabelecimento
-        Predicate establishmentCondition = builder.equal(root.get(firstEntityName).get(secondEntityName).get(foreignKeyIdName), foreygnKeyId);
+        Predicate establishmentCondition = builder.equal(root.get(firstEntityName).get(secondEntityName).get(foreignKeyIdName), foreignKeyId);
+        Predicate conditionalPredicate = builder.equal(root.get(conditionalName), conditional);
 
         query.multiselect(status, count);
-        query.where(establishmentCondition);
+        query.where(builder.and(establishmentCondition, conditionalPredicate));
         query.groupBy(status);
 
         List<Object[]> results = em.createQuery(query).getResultList();

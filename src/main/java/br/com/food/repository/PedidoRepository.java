@@ -2,6 +2,7 @@ package br.com.food.repository;
 
 import br.com.food.entity.Pedido;
 import br.com.food.enuns.PedidoStatus;
+import br.com.food.enuns.PedidoType;
 import br.com.food.enuns.TipoPagamento;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
@@ -115,7 +116,7 @@ public class PedidoRepository extends GenericRepository {
     }
 
     public List<Pedido> getPedidosEstablishmentByStatus(int idestabelecimento, String status) {
-        return super.getTwoEntitiesByForeignKeyAndWithConditional(
+        return super.getTwoEntitiesByForeignKeyAndWithTwoConditional(
                 Pedido.class,
                 "user",
                 "estabelecimento",
@@ -123,7 +124,9 @@ public class PedidoRepository extends GenericRepository {
                 idestabelecimento,
                 "data",
                 "status",
-                PedidoStatus.valueOf(status)
+                PedidoStatus.valueOf(status),
+                "type",
+                PedidoType.valueOf("DELIVERY")
         );
     }
 
@@ -131,6 +134,8 @@ public class PedidoRepository extends GenericRepository {
         return super.getCountByStatusForEstablishment(
                 Pedido.class,
                 "status",
+                "type",
+                PedidoType.valueOf("DELIVERY"),
                 "user",
                 "estabelecimento",
                 "idestabelecimento",
