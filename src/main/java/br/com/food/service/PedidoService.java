@@ -242,6 +242,7 @@ public class PedidoService {
         statusToBackground.put(PedidoStatus.PENDENTE, "attention_light");
 
         return Arrays.stream(PedidoStatus.values())
+            .filter(status -> status != PedidoStatus.PENDENTE)
             .sorted(Comparator.comparingInt(PedidoStatus::getOrder))
             .map(status -> new PedidoStatusDTO(
             count.getOrDefault(status.name(), 0L).intValue(),
