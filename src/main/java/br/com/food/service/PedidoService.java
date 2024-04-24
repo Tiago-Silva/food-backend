@@ -58,6 +58,21 @@ public class PedidoService {
         );
     }
 
+    public void updateStatusPedido(PedidoResponseDTO responseDTO) {
+        if (responseDTO == null || responseDTO.idpedido() <= 0 || responseDTO.status().toString().isEmpty()) {
+            throw new IllegalArgumentException("Parametros inválidos");
+        }
+        Optional<Pedido> optionalPedido = Optional.ofNullable(this.repository.getEntityById(Pedido.class, responseDTO.idpedido()));
+
+        if (optionalPedido.isPresent()) {
+            Pedido pedido = optionalPedido.get();
+            pedido.setStatus(responseDTO.status());
+
+            this.repository.update(pedido);
+        }
+
+    }
+
     public void saveOrUpdate(PedidoResponseDTO responseDTO) {
         if (responseDTO.idpedido() != null && responseDTO.idpedido() > 0) {
             if (responseDTO.itemsReponseDTO().isEmpty()) {

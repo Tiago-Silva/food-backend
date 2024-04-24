@@ -33,6 +33,12 @@ public class PedidoController {
         return new ResponseEntity<>(HttpStatus.CREATED,HttpStatus.OK);
     }
 
+    @PutMapping("/updateStatusPedido")
+    public ResponseEntity<HttpStatus> updateStatusPedido(@RequestBody PedidoResponseDTO responseDTO) {
+        this.service.updateStatusPedido(responseDTO);
+        return new ResponseEntity<>(HttpStatus.CREATED,HttpStatus.OK);
+    }
+
     @PostMapping("/saveOrUpdate")
     public ResponseEntity<HttpStatus> saveOrUpdate(@RequestBody PedidoResponseDTO responseDTO) {
         this.service.saveOrUpdate(responseDTO);
