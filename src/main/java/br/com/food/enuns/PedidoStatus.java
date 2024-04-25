@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum PedidoStatus {
     PENDENTE(1),
     RECEBIDO(2),
-    PREPARAÇÃO(3),
+    PREPARADO(3),
     PRONTO(4),
     ENVIADO(5),
     ENTREGUE(6),

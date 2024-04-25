@@ -248,7 +248,7 @@ public class PedidoService {
 
         EnumMap<PedidoStatus, String> statusToBackground = new EnumMap<>(PedidoStatus.class);
         statusToBackground.put(PedidoStatus.RECEBIDO, "title");
-        statusToBackground.put(PedidoStatus.PREPARAÇÃO, "secondary");
+        statusToBackground.put(PedidoStatus.PREPARADO, "secondary");
         statusToBackground.put(PedidoStatus.PRONTO, "secondary_light");
         statusToBackground.put(PedidoStatus.ENVIADO, "success_light");
         statusToBackground.put(PedidoStatus.FINALIZADO, "success");
