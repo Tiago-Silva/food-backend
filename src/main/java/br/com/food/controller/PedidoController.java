@@ -66,6 +66,14 @@ public class PedidoController {
         return new ResponseEntity<>(this.service.getAllPedidoByUser(iduser), HttpStatus.OK);
     }
 
+    @GetMapping("/getPedidoByUserAndStatus/{iduser}/{status}")
+    public ResponseEntity<List<PedidoResponseDTO>> getPedidoByUserAndStatus(
+            @PathVariable("iduser") String iduser,
+            @PathVariable("status") String status
+    ) {
+        return new ResponseEntity<>(this.service.getPedidosIdUserAndStatus(iduser, status), HttpStatus.OK);
+    }
+
     @GetMapping("/getPedidosByUserPayment")
     public ResponseEntity<List<PedidoResponseDTO>> getPedidoByUserAndByPaymentType(
             @RequestHeader("iduser")
