@@ -139,6 +139,14 @@ public class PedidoService {
                 .stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
     }
 
+    public List<PedidoResponseDTO> getPedidosIdUserAndStatus(String iduser, String status) {
+        if (iduser.isEmpty() || status == null) {
+            throw new IllegalArgumentException("Argumentos inválidos");
+        }
+        return this.repository.getPedidosIdUserAndStatus(iduser, status)
+                .stream().map(this::mapPedidoToResponseDTO).collect(Collectors.toList());
+    }
+
     public Page<PedidoResponseDTO> getPedidoById(Long idpedido) {
         if (idpedido <= 0) {
             throw new IllegalArgumentException("idpedido inválido ou null");

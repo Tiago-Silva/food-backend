@@ -130,6 +130,20 @@ public class PedidoRepository extends GenericRepository {
         );
     }
 
+    public List<Pedido> getPedidosIdUserAndStatus(String iduser, String status) {
+        return super.getEntitiesByForeignKeyAndWithTwoConditional(
+                Pedido.class,
+                "user",
+                "id",
+                iduser,
+                "data",
+                "status",
+                PedidoStatus.valueOf(status),
+                "type",
+                PedidoType.valueOf("DELIVERY")
+        );
+    }
+
     public Map<String, Long> getCountByStatusForEstablishment(int idestabelecimento) {
         return super.getCountByStatusForEstablishment(
                 Pedido.class,

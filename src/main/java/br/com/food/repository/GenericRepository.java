@@ -281,6 +281,47 @@ public abstract class GenericRepository {
         return query.getResultList();
     }
 
+    public <T, E extends Enum<E>, F extends Enum<F>> List<T> getEntitiesByForeignKeyAndWithTwoConditional(
+            Class<T> entityClass,
+            String firstEntityName,
+            String foreignKeyPropertyName,
+            String foreignKeyId,
+            String orderByPropertyName,
+            String firstConditionalName,
+            E firstConditional,
+            String secondConditionalName,
+            F secondConditional
+    ) {
+        CriteriaBuilder builder = this.getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = builder.createQuery(entityClass);
+        Root<T> root = criteriaQuery.from(entityClass);
+        criteriaQuery.select(root);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        ParameterExpression<String> exForeignKeyId = builder.parameter(String.class, foreignKeyPropertyName);
+        predicates.add(builder.equal(root.get(firstEntityName).get(foreignKeyPropertyName), exForeignKeyId));
+
+        ParameterExpression<Enum> exConditional = builder.parameter(Enum.class, firstConditionalName);
+        predicates.add(builder.equal(root.get(firstConditionalName), exConditional));
+
+        ParameterExpression<Enum> exSecondConditional = builder.parameter(Enum.class, secondConditionalName);
+        predicates.add(builder.equal(root.get(secondConditionalName), exSecondConditional));
+
+        criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+        if (orderByPropertyName != null && !orderByPropertyName.isEmpty()) {
+            criteriaQuery.orderBy(builder.asc(root.get(orderByPropertyName)));
+        }
+
+        TypedQuery<T> query = em.createQuery(criteriaQuery);
+        query.setParameter(foreignKeyPropertyName, foreignKeyId);
+        query.setParameter(exConditional, firstConditional);
+        query.setParameter(exSecondConditional, secondConditional);
+
+        return query.getResultList();
+    }
+
     public <T> List<T> getTwoEntitiesByForeignKey(
             Class<T> entityClass,
             String firstEntityName,
